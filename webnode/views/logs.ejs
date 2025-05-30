@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>ILdevBot - Logs</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div class="container-main">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-logo" style="margin-bottom:38px;">
+            <img src="/images/logo.png" width="140" style="transition:width 0.2s;" alt="logo">
+            <button id="sidebar-toggle" aria-label="Réduire/agrandir la barre" style="background:none;border:none;position:absolute;right:10px;top:18px;font-size:1.6em;cursor:pointer;z-index:10;transition:transform 0.2s;">
+                <span id="sidebar-toggle-icon">⏴</span>
+            </button>
+        </div>
+        <h3 class="sidebar-title" style="margin-top:30px;">MENU</h3>
+        <nav>
+            <ul class="sidebar-menu">
+                <li><a href="/dashboard" data-icon="📊"><span>Dashboard</span></a></li>
+                <li><a href="/trades" data-icon="📈"><span>Trades ouverts</span></a></li>
+                <li><a href="/journal" data-icon="📊"><span>Journal de trading</span></a></li>
+                <li><a href="/logs" data-icon="📝"><span>Logs</span></a></li>
+                <li><a href="/parametre" data-icon="⚙️"><span>Paramètres</span></a></li>
+            </ul>
+        </nav>
+    </aside>
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <h1 class="main-title">📝 Logs</h1>
+        <% if (logContent && logContent.length) { %>
+            <pre style="background:#18191e; color:#eaeaea; padding:18px 12px; border-radius:12px; max-height:480px; overflow:auto; font-size:1em;">
+<%= logContent.join('') %></pre>
+        <% } else { %>
+            <div style="color:#bbb;">Aucun log trouvé.</div>
+        <% } %>
+        <footer class="sticky-footer">
+            <hr style="margin-top:5px; margin-bottom:10px; border: none; border-top: 1px solid #3a3a3a;">
+            ILdevBot V1 — une solution simple, pour faire grandir vos ambitions de trading.<br>
+            © 2025 Tous droits réservés.
+        </footer>
+    </main>
+    <button class="theme-toggle" id="theme-toggle" title="Basculer mode clair/sombre">🌙</button>
+</div>
+<script>
+    // Theme toggle logic
+    document.addEventListener('DOMContentLoaded', function() {
+        const btn = document.getElementById('theme-toggle');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        let theme = localStorage.getItem('theme') || (prefersDark ? 'dark' : 'light');
+        document.body.setAttribute('data-theme', theme);
+        btn.innerText = theme === 'dark' ? '🌙' : '☀️';
+        btn.onclick = function() {
+            theme = (theme === 'dark') ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            btn.innerText = theme === 'dark' ? '🌙' : '☀️';
+        };
+
+        // Sidebar collapse/expand
+        const sidebar = document.querySelector('.sidebar');
+        const toggleBtn = document.getElementById('sidebar-toggle');
+        const toggleIcon = document.getElementById('sidebar-toggle-icon');
+        let collapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+        function setSidebarState(state) {
+            collapsed = state;
+            if (collapsed) {
+                sidebar.classList.add('collapsed');
+                toggleIcon.textContent = '⏵';
+            } else {
+                sidebar.classList.remove('collapsed');
+                toggleIcon.textContent = '⏴';
+            }
+            localStorage.setItem('sidebarCollapsed', collapsed);
+        }
+        setSidebarState(collapsed);
+        toggleBtn.onclick = function() {
+            setSidebarState(!collapsed);
+        };
+    });
+</script>
+</body>
+</html>

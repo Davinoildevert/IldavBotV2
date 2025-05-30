@@ -1,0 +1,5 @@
+python-dotenv
+loguru
+MetaTrader5
+telethon
+streamlit

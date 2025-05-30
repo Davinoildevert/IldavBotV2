@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>ILdevBot - Paramètres</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #2a2a2a;
+            margin-bottom: 18px;
+            background: #191a1f;
+            border-radius: 16px 16px 0 0;
+            overflow: hidden;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #b5c9df;
+            font-size: 1.18em;
+            font-weight: 700;
+            padding: 16px 36px 12px 36px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: color 0.18s, border-bottom 0.18s, background 0.18s;
+            outline: none;
+            position: relative;
+        }
+        .tab-btn.active {
+            color: #4e96ff;
+            border-bottom: 3px solid #4e96ff;
+            background: #18191e;
+            box-shadow: 0 2px 12px rgba(49,85,255,0.08);
+        }
+        .tab-content { display: none; animation: fadein 0.4s; }
+        .tab-content.active { display: block; }
+        @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+        .config-section { background: #191a1f; border-radius: 16px; padding: 28px 32px 18px 32px; margin-bottom: 18px; box-shadow: 0 2px 16px rgba(0,0,0,0.09); }
+        .config-section h2 { margin-top: 0; font-size: 1.3em; color: #4e96ff; }
+        .desc { color: #aaa; font-size: 1em; margin-bottom: 18px; margin-top: -8px; }
+        .form-row { display: flex; align-items: center; margin-bottom: 14px; }
+        .form-row label { flex: 1; font-weight: 500; }
+        .form-row input, .form-row select, .form-row textarea { flex: 2; padding: 7px 10px; border-radius: 8px; border: 1px solid #2a2a2a; background: #23242a; color: #eaeaea; font-size: 1em; }
+        .form-row textarea { min-height: 38px; }
+        .form-row .tooltip {
+            margin-left: 7px;
+            color: #4e96ff;
+            cursor: pointer;
+            font-size: 1.1em;
+            border-bottom: 1px dotted #4e96ff;
+            position: relative;
+        }
+        .form-row .tooltip:hover::after {
+            content: attr(data-tip);
+            position: absolute;
+            left: 0;
+            top: 22px;
+            background: #23242a;
+            color: #fff;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 0.98em;
+            white-space: pre-line;
+            z-index: 10;
+            box-shadow: 0 2px 12px rgba(49,85,255,0.13);
+        }
+        .custom-btn.save {
+            width: 260px;
+            font-size: 1.25em;
+            margin: 24px auto 0 auto;
+            display: block;
+            background: linear-gradient(90deg, #3499fa 0%, #5ae6b4 100%);
+            color: #fff;
+            border: none;
+            border-radius: 18px;
+            box-shadow: 0 1px 10px 0 rgba(49,85,255,0.08);
+            padding: 16px 0;
+            font-weight: 700;
+            transition: box-shadow .2s, background .2s;
+        }
+        .custom-btn.save:hover {
+            background: linear-gradient(90deg, #247bc3 0%, #3cb98c 100%);
+        }
+        .required:after { content: '*'; color: #ff6464; margin-left: 3px; }
+        .theme-toggle {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: #b5c9df;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .theme-toggle:hover {
+            color: #4e96ff;
+        }
+        /* Sidebar styles */
+        .sidebar {
+            width: 250px;
+            background: #191a1f;
+            padding: 20px;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            transition: width 0.2s;
+            z-index: 100;
+        }
+        .sidebar.collapsed {
+            width: 80px;
+        }
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .sidebar-logo img {
+            transition: width 0.2s;
+        }
+        .sidebar-title {
+            margin-top: 30px;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            color: #b5c9df;
+            text-align: center;
+        }
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar-menu li {
+            margin-bottom: 10px;
+        }
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            color: #b5c9df;
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 8px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .sidebar-menu a:hover {
+            background: #4e96ff;
+            color: #fff;
+        }
+        .sidebar-menu a.active {
+            background: #4e96ff;
+            color: #fff;
+        }
+        .sidebar-menu a[data-icon] {
+            position: relative;
+            padding-left: 40px;
+        }
+        .sidebar-menu a[data-icon]:before {
+            content: attr(data-icon);
+            position: absolute;
+            left: 10px;
+            font-size: 1.2em;
+        }
+        /* Main content styles */
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            transition: margin-left 0.2s;
+        }
+        .main-content.collapsed {
+            margin-left: 80px;
+        }
+        /* Sticky footer styles */
+        .sticky-footer {
+            position: sticky;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #191a1f;
+            padding: 10px 20px;
+            border-top: 1px solid #2a2a2a;
+            color: #aaa;
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                width: 70px !important;
+                min-width: 70px !important;
+                padding: 12px 0 0 0 !important;
+            }
+            .sidebar-logo img {
+                width: 48px !important;
+            }
+            .sidebar-title {
+                display: none !important;
+            }
+            .sidebar-menu a span {
+                display: none !important;
+            }
+            .sidebar-menu a {
+                padding: 11px 0 11px 18px !important;
+                text-align: left;
+                font-size: 1.3em !important;
+            }
+            .sidebar-menu a:before {
+                content: attr(data-icon);
+                font-size: 1.3em;
+                margin-right: 0;
+            }
+            .main-content {
+                margin-left: 70px !important;
+                padding: 10px 2vw !important;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .sidebar {
+                width: 100vw !important;
+                min-width: unset !important;
+                flex-direction: row !important;
+                justify-content: flex-start !important;
+                align-items: flex-start !important;
+                padding: 10px 0 0 0 !important;
+                box-shadow: none !important;
+            }
+            .sidebar.collapsed {
+                width: 60px !important;
+                min-width: 60px !important;
+            }
+            .main-content {
+                margin-left: 0 !important;
+                padding: 10px 2vw !important;
+            }
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab-btn');
+            const contents = document.querySelectorAll('.tab-content');
+            tabs.forEach((tab, idx) => {
+                tab.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    tabs.forEach(t => t.classList.remove('active'));
+                    contents.forEach(c => c.classList.remove('active'));
+                    tab.classList.add('active');
+                    contents[idx].classList.add('active');
+                });
+            });
+            if (tabs.length) { tabs[0].click(); }
+
+            // Theme toggle logic
+            const btn = document.getElementById('theme-toggle');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            let theme = localStorage.getItem('theme') || (prefersDark ? 'dark' : 'light');
+            document.body.setAttribute('data-theme', theme);
+            btn.innerText = theme === 'dark' ? '🌙' : '☀️';
+            btn.onclick = function() {
+                theme = (theme === 'dark') ? 'light' : 'dark';
+                document.body.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+                btn.innerText = theme === 'dark' ? '🌙' : '☀️';
+            };
+
+            // Affichage/masquage mot de passe MT5 (icône dans la barre, style login moderne)
+            const pwdInput = document.getElementById('mt5_password');
+            const toggleBtn = document.getElementById('toggle-mt5-password');
+            if (pwdInput && toggleBtn) {
+                toggleBtn.addEventListener('click', function() {
+                    if (pwdInput.type === 'password') {
+                        pwdInput.type = 'text';
+                        toggleBtn.textContent = '🙈';
+                    } else {
+                        pwdInput.type = 'password';
+                        toggleBtn.textContent = '👁️';
+                    }
+                });
+            }
+
+            // Sidebar collapse/expand
+            const sidebar = document.querySelector('.sidebar');
+            const toggleBtnSidebar = document.getElementById('sidebar-toggle');
+            const toggleIcon = document.getElementById('sidebar-toggle-icon');
+            let collapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            function setSidebarState(state) {
+                collapsed = state;
+                if (collapsed) {
+                    sidebar.classList.add('collapsed');
+                    toggleIcon.textContent = '⏵';
+                } else {
+                    sidebar.classList.remove('collapsed');
+                    toggleIcon.textContent = '⏴';
+                }
+                localStorage.setItem('sidebarCollapsed', collapsed);
+            }
+            setSidebarState(collapsed);
+            toggleBtnSidebar.onclick = function() {
+                setSidebarState(!collapsed);
+            };
+        });
+    </script>
+</head>
+<body>
+<div class="container-main">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-logo" style="margin-bottom:38px;">
+            <img src="/images/logo.png" width="140" style="transition:width 0.2s;" alt="logo">
+            <button id="sidebar-toggle" aria-label="Réduire/agrandir la barre" style="background:none;border:none;position:absolute;right:10px;top:18px;font-size:1.6em;cursor:pointer;z-index:10;transition:transform 0.2s;">
+                <span id="sidebar-toggle-icon">⏴</span>
+            </button>
+        </div>
+        <h3 class="sidebar-title" style="margin-top:30px;">MENU</h3>
+        <nav>
+            <ul class="sidebar-menu">
+                <li><a href="/dashboard" data-icon="📊"><span>Dashboard</span></a></li>
+                <li><a href="/trades" data-icon="📈"><span>Trades ouverts</span></a></li>
+                <li><a href="/journal" data-icon="📊"><span>Journal de trading</span></a></li>
+                <li><a href="/logs" data-icon="📝"><span>Logs</span></a></li>
+                <li><a href="/parametre" data-icon="⚙️"><span>Paramètres</span></a></li>
+            </ul>
+        </nav>
+    </aside>
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <h1 class="main-title">⚙️ Configurations du bot</h1>
+        <% if (message) { %>
+            <div class="alert-success"><%= message %></div>
+        <% } %>
+        <form method="POST" action="/parametre">
+            <div class="tabs">
+                <button class="tab-btn" type="button">🔑 MT5</button>
+                <button class="tab-btn" type="button">💬 Telegram</button>
+                <button class="tab-btn" type="button">📈 Trading</button>
+                <button class="tab-btn" type="button">🛡️ Risques/Symboles</button>
+                <button class="tab-btn" type="button">🧩 Parser avancé</button>
+            </div>
+            <div class="tab-content">
+                <div class="config-section">
+                    <h2>🔑 MT5</h2>
+                    <div class="desc">Configure ici tes identifiants de connexion à MetaTrader 5.</div>
+                    <div class="form-row"><label class="required">Login MT5</label><input type="text" name="mt5_login" value="<%= config.mt5_login %>" required /></div>
+                    <div class="form-row" style="position:relative;">
+                        <label class="required">Mot de passe MT5</label>
+                        <input type="password" name="mt5_password" id="mt5_password" value="<%= config.mt5_password %>" required style="width:100%;padding-right:2.2em;" />
+                        <button type="button" id="toggle-mt5-password" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1.1em;padding:0;line-height:1;opacity:0.7;" tabindex="-1" aria-label="Afficher/masquer le mot de passe" title="Afficher/masquer le mot de passe">👁️</button>
+                    </div>
+                    <div class="form-row"><label class="required">Serveur MT5</label><input type="text" name="mt5_server" value="<%= config.mt5_server %>" required /></div>
+                </div>
+            </div>
+            <div class="tab-content">
+                <div class="config-section">
+                    <h2>💬 Telegram</h2>
+                    <div class="desc">Renseigne ici les infos de ton API Telegram et les canaux à surveiller.</div>
+                    <div class="form-row"><label class="required">API ID</label><input type="text" name="telegram_api_id" value="<%= config.telegram_api_id %>" required /></div>
+                    <div class="form-row"><label class="required">API Hash</label><input type="text" name="telegram_api_hash" value="<%= config.telegram_api_hash %>" required /></div>
+                    <div class="form-row"><label>IDs des canaux (séparés par des virgules)</label><textarea name="telegram_channel"><%= Array.isArray(config.telegram_channel) ? config.telegram_channel.join(',') : '' %></textarea></div>
+                    <div class="form-row"><label>Nom du fichier session</label><input type="text" name="telegram_session" value="<%= config.telegram_session %>" /></div>
+                </div>
+            </div>
+            <div class="tab-content">
+                <div class="config-section">
+                    <h2>📈 Trading</h2>
+                    <div class="desc">Paramètres de trading : mode réel ou simulation, break-even, TP, etc.</div>
+                    <div class="form-row"><label>Mode de trading</label>
+                        <select name="mode">
+                            <option value="mt5_trading" <%= config.mode === 'mt5_trading' ? 'selected' : '' %>>MT5 Trading</option>
+                            <option value="paper" <%= config.mode === 'paper' ? 'selected' : '' %>>Paper Trading</option>
+                        </select>
+                    </div>
+                    <div class="form-row"><label>Break-even</label><input type="checkbox" name="break_even_enabled" value="1" <%= config.break_even_enabled ? 'checked' : '' %> /></div>
+                    <div class="form-row"><label>Mode TP</label>
+                        <select name="tp_mode">
+                            <option value="progressive" <%= config.tp_mode === 'progressive' ? 'selected' : '' %>>Progressif</option>
+                            <option value="all_at_tp1" <%= config.tp_mode === 'all_at_tp1' ? 'selected' : '' %>>Tout au TP1</option>
+                        </select>
+                    </div>
+                    <div class="form-row"><label>Stats à la sortie</label><input type="checkbox" name="show_stats_on_exit" value="1" <%= config.show_stats_on_exit ? 'checked' : '' %> /></div>
+                </div>
+            </div>
+            <div class="tab-content">
+                <div class="config-section">
+                    <h2>🛡️ Risques/Symboles</h2>
+                    <div class="desc">Définis ici les limites de risque et la liste des symboles autorisés.</div>
+                    <div class="form-row"><label>Max lot</label><input type="number" step="0.01" name="risk_max_lot" value="<%= config.risk.max_lot %>" /></div>
+                    <div class="form-row"><label>Perte journalière max</label><input type="number" name="risk_max_daily_loss" value="<%= config.risk.max_daily_loss %>" /></div>
+                    <div class="form-row"><label>Nb max de trades ouverts</label><input type="number" name="risk_max_open_trades" value="<%= config.risk.max_open_trades %>" /></div>
+                    <div class="form-row"><label>SL requis</label><input type="checkbox" name="risk_stop_loss_required" value="1" <%= config.risk.stop_loss_required ? 'checked' : '' %> /></div>
+                    <div class="form-row"><label>Lot par défaut</label><input type="number" step="0.01" name="risk_default_lot" value="<%= config.risk.default_lot %>" /></div>
+                    <div class="form-row"><label>Break-even au TP</label><input type="checkbox" name="risk_break_even_on_tp" value="1" <%= config.risk.break_even_on_tp ? 'checked' : '' %> /></div>
+                    <div class="form-row"><label>Symboles autorisés (séparés par des virgules)</label><textarea name="risk_allowed_symbols"><%= Array.isArray(config.risk.allowed_symbols) ? config.risk.allowed_symbols.join(',') : '' %></textarea></div>
+                </div>
+            </div>
+            <div class="tab-content">
+                <div class="config-section">
+                    <h2>🧩 Parser avancé</h2>
+                    <div class="desc">Personnalise les regex pour parser les signaux Telegram.<span class="tooltip" data-tip="Utilise des regex pour extraire symbol, type, TP, SL des messages.">?</span></div>
+                    <div class="form-row"><label>Regex symbol <span class="tooltip" data-tip="Exemple : \\b(XAUUSD|EURUSD)\\b">?</span></label><textarea name="parser_symbol_pattern"><%= config.signal_parser.symbol_pattern %></textarea></div>
+                    <div class="form-row"><label>Regex type <span class="tooltip" data-tip="Exemple : \\b(BUY|SELL)\\b">?</span></label><textarea name="parser_type_pattern"><%= config.signal_parser.type_pattern %></textarea></div>
+                    <div class="form-row"><label>Regex TP <span class="tooltip" data-tip="Exemple : (?i)\\b((tp|takeprofit)...">?</span></label><textarea name="parser_tp_pattern"><%= config.signal_parser.tp_pattern %></textarea></div>
+                    <div class="form-row"><label>Regex SL <span class="tooltip" data-tip="Exemple : \\bSL\\s*[:=, \\s]+(-?\\d+[.,]?\\d*)">?</span></label><textarea name="parser_sl_pattern"><%= config.signal_parser.sl_pattern %></textarea></div>
+                </div>
+            </div>
+            <button class="custom-btn save" type="submit">💾 Sauvegarder la config</button>
+        </form>
+        <footer class="sticky-footer">
+            <hr style="margin-top:5px; margin-bottom:10px; border: none; border-top: 1px solid #3a3a3a;">
+            ILdevBot V1 — une solution simple, pour faire grandir vos ambitions de trading.<br>
+            © 2025 Tous droits réservés.
+        </footer>
+    </main>
+    <button class="theme-toggle" id="theme-toggle" title="Basculer mode clair/sombre">🌙</button>
+</div>
+</body>
+</html>

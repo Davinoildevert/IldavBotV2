@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Contrôler le bot - ILdavBot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="container-main">
+    <!-- SIDEBAR identique -->
+    <aside class="sidebar">
+        <div class="sidebar-logo" style="margin-bottom:38px;">
+            <img src="/images/logo.png" width="140" style="transition:width 0.2s;" alt="logo ILdavBot" aria-label="Logo ILdavBot">
+            <button id="sidebar-toggle" aria-label="Réduire ou agrandir la barre latérale" style="background:none;border:none;position:absolute;right:10px;top:18px;font-size:1.6em;cursor:pointer;z-index:10;transition:transform 0.2s;">
+                <span id="sidebar-toggle-icon">⏴</span>
+            </button>
+        </div>
+        <h3 class="sidebar-title" style="margin-top:30px;">MENU</h3>
+        <nav>
+            <ul class="sidebar-menu">
+                <li><a href="/dashboard" class="<%= (page === 'dashboard') ? 'active' : '' %>" data-icon="📊" title="Dashboard"><span>Dashboard</span></a></li>
+                <li><a href="/trades" class="<%= (page === 'trades') ? 'active' : '' %>" data-icon="📈" title="Trades ouverts"><span>Trades ouverts</span></a></li>
+                <li><a href="/journal" class="<%= (page === 'journal') ? 'active' : '' %>" data-icon="📒" title="Journal de trading"><span>Journal de trading</span></a></li>
+                <li><a href="/logs" class="<%= (page === 'logs') ? 'active' : '' %>" data-icon="📝" title="Logs"><span>Logs</span></a></li>
+                <li><a href="/parametre" class="<%= (page === 'parametre') ? 'active' : '' %>" data-icon="⚙️" title="Paramètres"><span>Paramètres</span></a></li>
+                <li><a href="/guide" class="<%= (page === 'guide') ? 'active' : '' %>" data-icon="❓" title="Guide"><span>Guide</span></a></li>
+                <li><a href="/logout" data-icon="🚪" title="Déconnexion" style="color:#ff6464;font-weight:600;"><span>Déconnexion</span></a></li>
+            </ul>
+        </nav>
+    </aside>
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <h1 class="main-title">🖥️ Contrôler le bot via le web</h1>
+        <div class="custom-card" style="max-width:700px;margin:0 auto;">
+            <h2 style="margin-top:0;">Mode d'emploi rapide</h2>
+            <ul style="font-size:1.13em;line-height:1.7;">
+                <li><b>Pause/Play :</b> Permet de mettre en pause ou de relancer le bot en un clic.</li>
+                <li><b>Redémarrer :</b> Redémarre complètement le bot (utile en cas de bug ou de changement de config).</li>
+                <li><b>Fermer un trade :</b> Ferme une position ouverte en cliquant sur la croix rouge dans la liste des trades.</li>
+                <li><b>Paramètres :</b> Modifie la configuration (MT5, Telegram, risques, etc.) dans l’onglet dédié puis clique sur "Sauvegarder".</li>
+                <li><b>Journal & Logs :</b> Consulte l’historique des trades et les derniers logs pour suivre l’activité du bot.</li>
+            </ul>
+            <hr style="margin:18px 0;">
+            <h3>⚙️ Conseils & Bonnes pratiques</h3>
+            <ul style="font-size:1.08em;line-height:1.6;">
+                <li>Vérifie que l’API Python (<code>api_server.py</code>) est bien lancée pour que les actions fonctionnent.</li>
+                <li>Le dashboard est <b>responsive</b> : tu peux l’utiliser sur mobile, tablette ou PC.</li>
+                <li>En cas d’erreur API, vérifie que le bot et l’API sont bien démarrés.</li>
+                <li>Les modifications de paramètres sont prises en compte au prochain signal ou redémarrage du bot.</li>
+            </ul>
+            <div style="margin-top:22px;font-size:1.01em;color:#aaa;">Pour toute question, consulte le README ou contacte le support.</div>
+        </div>
+        <footer class="sticky-footer">
+            <hr style="margin-top:5px; margin-bottom:10px; border: none; border-top: 1px solid #3a3a3a;">
+            ILdavBot V1 — Guide utilisateur.<br>
+            © 2025 Tous droits réservés.
+        </footer>
+    </main>
+</div>
+<script>
+// Sidebar collapse/expand (copié du dashboard)
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.querySelector('.sidebar');
+    const toggleBtn = document.getElementById('sidebar-toggle');
+    const toggleIcon = document.getElementById('sidebar-toggle-icon');
+    let collapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+    function setSidebarState(state) {
+        collapsed = state;
+        if (collapsed) {
+            sidebar.classList.add('collapsed');
+            toggleIcon.textContent = '⏵';
+        } else {
+            sidebar.classList.remove('collapsed');
+            toggleIcon.textContent = '⏴';
+        }
+        localStorage.setItem('sidebarCollapsed', collapsed);
+    }
+    setSidebarState(collapsed);
+    toggleBtn.onclick = function() {
+        setSidebarState(!collapsed);
+    };
+});
+</script>
+</body>
+</html>

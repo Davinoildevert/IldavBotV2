@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>ILdevBot - Journal de trading</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div class="container-main">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-logo" style="margin-bottom:38px;">
+            <img src="/images/logo.png" width="140" style="transition:width 0.2s;" alt="logo">
+            <button id="sidebar-toggle" aria-label="Réduire/agrandir la barre" style="background:none;border:none;position:absolute;right:10px;top:18px;font-size:1.6em;cursor:pointer;z-index:10;transition:transform 0.2s;">
+                <span id="sidebar-toggle-icon">⏴</span>
+            </button>
+        </div>
+        <h3 class="sidebar-title" style="margin-top:30px;">MENU</h3>
+        <nav>
+            <ul class="sidebar-menu">
+                <li><a href="/dashboard" data-icon="📊"><span>Dashboard</span></a></li>
+                <li><a href="/trades" data-icon="📈"><span>Trades ouverts</span></a></li>
+                <li><a href="/journal" data-icon="📊"><span>Journal de trading</span></a></li>
+                <li><a href="/logs" data-icon="📝"><span>Logs</span></a></li>
+                <li><a href="/parametre" data-icon="⚙️"><span>Paramètres</span></a></li>
+            </ul>
+        </nav>
+    </aside>
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <h1 class="main-title">📊 Journal des trades fermés / PNL</h1>
+        <% if (closed_trades && closed_trades.length) { 
+            let pnl_total = 0, nb_trades = closed_trades.length, nb_gagnes = 0, nb_perdus = 0, gain_moy = 0, perte_moy = 0;
+            closed_trades.forEach(t => { pnl_total += t.pnl; });
+            nb_gagnes = closed_trades.filter(t => t.pnl > 0).length;
+            nb_perdus = closed_trades.filter(t => t.pnl <= 0).length;
+            gain_moy = nb_gagnes ? (closed_trades.filter(t => t.pnl > 0).reduce((a,b) => a + b.pnl, 0) / nb_gagnes) : 0;
+            perte_moy = nb_perdus ? (closed_trades.filter(t => t.pnl <= 0).reduce((a,b) => a + b.pnl, 0) / nb_perdus) : 0;
+            let winrate = nb_trades ? (nb_gagnes / nb_trades * 100) : 0;
+        %>
+        <div class="card-row">
+            <div class="custom-card"><div class="card-title">PNL Total</div><div class="big-icon" style="font-size:2em;"><%= pnl_total.toFixed(2) %> €</div></div>
+            <div class="custom-card"><div class="card-title">Winrate</div><div class="big-icon" style="font-size:2em;"><%= winrate.toFixed(2) %> %</div></div>
+            <div class="custom-card"><div class="card-title">Gain moyen</div><div class="big-icon" style="font-size:2em;"><%= gain_moy.toFixed(2) %> €</div></div>
+            <div class="custom-card"><div class="card-title">Perte moyenne</div><div class="big-icon" style="font-size:2em;"><%= perte_moy.toFixed(2) %> €</div></div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Ticket</th>
+                    <th>Symbole</th>
+                    <th>Type</th>
+                    <th>Lot</th>
+                    <th>Ouverture</th>
+                    <th>Fermeture</th>
+                    <th>Entrée</th>
+                    <th>Sortie</th>
+                    <th>TP</th>
+                    <th>SL</th>
+                    <th>PNL</th>
+                    <th>Raison</th>
+                    <th>Commission</th>
+                    <th>Swap</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% closed_trades.slice().sort((a,b) => (b.close_time||0)-(a.close_time||0)).forEach(trade => { %>
+                    <tr>
+                        <td><%= trade.ticket %></td>
+                        <td><%= trade.symbol %></td>
+                        <td><%= trade.type %></td>
+                        <td><%= trade.lot %></td>
+                        <td><%= trade.open_time ? new Date(trade.open_time*1000).toLocaleString('fr-FR') : '-' %></td>
+                        <td><%= trade.close_time ? new Date(trade.close_time*1000).toLocaleString('fr-FR') : '-' %></td>
+                        <td><%= trade.entry %></td>
+                        <td><%= trade.exit %></td>
+                        <td><%= trade.tp %></td>
+                        <td><%= trade.sl %></td>
+                        <td><%= trade.pnl %></td>
+                        <td><%= trade.exit_reason || '' %></td>
+                        <td><%= trade.commission || '' %></td>
+                        <td><%= trade.swap || '' %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+        <% } else { %>
+            <div style="color:#bbb;">Aucun trade fermé pour l’instant.</div>
+        <% } %>
+        <footer class="sticky-footer">
+            <hr style="margin-top:5px; margin-bottom:10px; border: none; border-top: 1px solid #3a3a3a;">
+            ILdevBot V1 — une solution simple, pour faire grandir vos ambitions de trading.<br>
+            © 2025 Tous droits réservés.
+        </footer>
+    </main>
+    <button class="theme-toggle" id="theme-toggle" title="Basculer mode clair/sombre">🌙</button>
+</div>
+<script>
+    // Theme toggle logic
+    document.addEventListener('DOMContentLoaded', function() {
+        const btn = document.getElementById('theme-toggle');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        let theme = localStorage.getItem('theme') || (prefersDark ? 'dark' : 'light');
+        document.body.setAttribute('data-theme', theme);
+        btn.innerText = theme === 'dark' ? '🌙' : '☀️';
+        btn.onclick = function() {
+            theme = (theme === 'dark') ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            btn.innerText = theme === 'dark' ? '🌙' : '☀️';
+        };
+    });
+    // Sidebar collapse/expand
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.querySelector('.sidebar');
+        const toggleBtn = document.getElementById('sidebar-toggle');
+        const toggleIcon = document.getElementById('sidebar-toggle-icon');
+        let collapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+        function setSidebarState(state) {
+            collapsed = state;
+            if (collapsed) {
+                sidebar.classList.add('collapsed');
+                toggleIcon.textContent = '⏵';
+            } else {
+                sidebar.classList.remove('collapsed');
+                toggleIcon.textContent = '⏴';
+            }
+            localStorage.setItem('sidebarCollapsed', collapsed);
+        }
+        setSidebarState(collapsed);
+        toggleBtn.onclick = function() {
+            setSidebarState(!collapsed);
+        };
+    });
+</script>
+</body>
+</html>

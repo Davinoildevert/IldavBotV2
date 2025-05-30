@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>ILdavBot</title>
+    <link rel="icon" type="image/png" href="/images/icone.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dashboard de trading accessible et moderne pour ILdavBot.">
+    <meta name="theme-color" content="#18191e">
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script defer src="/js/dashboard.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const socket = io();
+        socket.on('dashboard_update', function(data) {
+            // Statut du bot
+            const statusIcon = document.getElementById('bot-status-icon');
+            const statusBtn = document.getElementById('bot-status-btn');
+            const statusText = document.getElementById('bot-status-text');
+            if (data.config.enabled) {
+                statusIcon.textContent = '⏸️';
+                statusBtn.form.action = '/pause';
+                statusText.innerHTML = '<span class="active-dot">● ACTIF</span>';
+            } else {
+                statusIcon.textContent = '▶️';
+                statusBtn.form.action = '/play';
+                statusText.innerHTML = '<span style="color:#ff6464;font-weight:700;">● PAUSE</span>';
+            }
+            // Trades ouverts
+            const tradesTable = document.getElementById('trades-table-body');
+            tradesTable.innerHTML = '';
+            if (data.open_trades.length) {
+                data.open_trades.forEach(trade => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${trade.symbol}</td>
+                        <td>${trade.type}</td>
+                        <td>${trade.lot}</td>
+                        <td>${trade.entry}</td>
+                        <td>${trade.sl}</td>
+                        <td>${trade.tp}</td>
+                        <td>${trade.profit}</td>
+                        <td>
+                            <form method="POST" action="/close-trade" style="display:inline;">
+                                <input type="hidden" name="ticket" value="${trade.ticket}">
+                                <button class="custom-btn red" type="submit">❌ Fermer</button>
+                            </form>
+                        </td>
+                    `;
+                    tradesTable.appendChild(row);
+                });
+            } else {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="8" style="color:#bbb;">Aucune position ouverte pour le moment.</td>`;
+                tradesTable.appendChild(row);
+            }
+            // Derniers signaux
+            const signalsDiv = document.getElementById('signals-list');
+            signalsDiv.innerHTML = '';
+            if (data.last_signals && data.last_signals.length) {
+                data.last_signals.slice(-5).reverse().forEach(sig => {
+                    const div = document.createElement('div');
+                    div.style.marginBottom = '8px';
+                    div.innerHTML = `<b>${sig.symbol} ${sig.type}</b> | Entrée: ${sig.entry || '-'} | SL: ${sig.sl || '-'} | TP: ${(Array.isArray(sig.tp) ? sig.tp.join(', ') : (sig.tp || '-'))}<div style=\"font-size:0.95em;color:#aaa;\">Reçu le ${sig.time || '-'} </div>`;
+                    signalsDiv.appendChild(div);
+                });
+            } else {
+                signalsDiv.innerHTML = '<div style="color:#bbb;">Aucun signal récent détecté.</div>';
+            }
+        });
+        // Theme toggle logic
+        const btn = document.getElementById('theme-toggle');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        let theme = localStorage.getItem('theme') || (prefersDark ? 'dark' : 'light');
+        document.body.setAttribute('data-theme', theme);
+        btn.innerText = theme === 'dark' ? '🌙' : '☀️';
+        btn.onclick = function() {
+            theme = (theme === 'dark') ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            btn.innerText = theme === 'dark' ? '🌙' : '☀️';
+        };
+        // Sidebar collapse/expand
+        const sidebar = document.querySelector('.sidebar');
+        const toggleBtn = document.getElementById('sidebar-toggle');
+        const toggleIcon = document.getElementById('sidebar-toggle-icon');
+        let collapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+        function setSidebarState(state) {
+            collapsed = state;
+            if (collapsed) {
+                sidebar.classList.add('collapsed');
+                toggleIcon.textContent = '⏵';
+            } else {
+                sidebar.classList.remove('collapsed');
+                toggleIcon.textContent = '⏴';
+            }
+            localStorage.setItem('sidebarCollapsed', collapsed);
+        }
+        setSidebarState(collapsed);
+        toggleBtn.onclick = function() {
+            setSidebarState(!collapsed);
+        };
+    });
+    </script>
+</head>
+<body>
+<div class="container-main">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-logo" style="margin-bottom:38px;">
+            <img src="/images/logo.png" width="140" style="transition:width 0.2s;" alt="logo ILdavBot" aria-label="Logo ILdavBot">
+            <button id="sidebar-toggle" aria-label="Réduire ou agrandir la barre latérale" style="background:none;border:none;position:absolute;right:10px;top:18px;font-size:1.6em;cursor:pointer;z-index:10;transition:transform 0.2s;">
+                <span id="sidebar-toggle-icon">⏴</span>
+            </button>
+        </div>
+        <h3 class="sidebar-title" style="margin-top:30px;">MENU</h3>
+        <nav>
+            <ul class="sidebar-menu">
+                <li><a href="/dashboard" class="<%= (page === 'dashboard') ? 'active' : '' %>" data-icon="📊" title="Dashboard"><span>Dashboard</span></a></li>
+                <li><a href="/trades" class="<%= (page === 'trades') ? 'active' : '' %>" data-icon="📈" title="Trades ouverts"><span>Trades ouverts</span></a></li>
+                <li><a href="/journal" class="<%= (page === 'journal') ? 'active' : '' %>" data-icon="📒" title="Journal de trading"><span>Journal de trading</span></a></li>
+                <li><a href="/logs" class="<%= (page === 'logs') ? 'active' : '' %>" data-icon="📝" title="Logs"><span>Logs</span></a></li>
+                <li><a href="/parametre" class="<%= (page === 'parametre') ? 'active' : '' %>" data-icon="⚙️" title="Paramètres"><span>Paramètres</span></a></li>
+                <li><a href="/guide" class="<%= (page === 'guide') ? 'active' : '' %>" data-icon="❓" title="Guide"><span>Guide</span></a></li>
+                <li><a href="/logout" data-icon="🚪" title="Déconnexion" style="color:#ff6464;font-weight:600;"><span>Déconnexion</span></a></li>
+            </ul>
+        </nav>
+    </aside>
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <h1 class="main-title"><img src="https://img.icons8.com/ios-filled/50/4e96ff/combo-chart.png" width="38" style="vertical-align:-10px;margin-right:9px;">Dashboard général</h1>
+        <% if (message) { %>
+            <script>window.addEventListener('DOMContentLoaded',()=>showToast('<%= message %>','success'));</script>
+        <% } %>
+        <% if (error) { %>
+            <script>window.addEventListener('DOMContentLoaded',()=>showToast('<%= error %>','error'));</script>
+        <% } %>
+        <div class="card-row">
+            <div class="custom-card">
+                <div class="card-title">Statut du bot</div>
+                <form method="POST" action="/<%= config.enabled ? 'pause' : 'play' %>" style="margin-bottom:0;">
+                    <button id="bot-status-btn" type="submit" class="emoji-btn" aria-label="<%= config.enabled ? 'Mettre en pause le bot' : 'Démarrer le bot' %>">
+                        <% if (config.enabled) { %>
+                            <span id="bot-status-icon" aria-hidden="true">⏸️</span>
+                        <% } else { %>
+                            <span id="bot-status-icon" aria-hidden="true">▶️</span>
+                        <% } %>
+                    </button>
+                </form>
+                <div class="statut-actif" id="bot-status-text" style="margin-top:10px;">
+                    <% if (config.enabled) { %>
+                        <span class="active-dot">● ACTIF</span>
+                    <% } else { %>
+                        <span style="color:#ff6464;font-weight:700;">● PAUSE</span>
+                    <% } %>
+                </div>
+            </div>
+            <div class="custom-card">
+                <div class="card-title">Redémarrer</div>
+                <form method="POST" action="/reset" style="margin-bottom:0;">
+                    <button type="submit" class="emoji-btn" aria-label="Redémarrer le bot">
+                        <span aria-hidden="true">🔄</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+        <h3 style="margin-top:32px;">📈 Trades ouverts</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Symbole</th>
+                    <th>Type</th>
+                    <th>Lot</th>
+                    <th>Entrée</th>
+                    <th>SL</th>
+                    <th>TP</th>
+                    <th>Profit</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="trades-table-body">
+                <% if (open_trades.length) { %>
+                    <% open_trades.forEach(trade => { %>
+                        <tr>
+                            <td><%= trade.symbol %></td>
+                            <td><%= trade.type %></td>
+                            <td><%= trade.lot %></td>
+                            <td><%= trade.entry %></td>
+                            <td><%= trade.sl %></td>
+                            <td><%= trade.tp %></td>
+                            <td><%= trade.profit %></td>
+                            <td>
+                                <form method="POST" action="/close-trade" style="display:inline;">
+                                    <input type="hidden" name="ticket" value="<%= trade.ticket %>">
+                                    <button class="custom-btn red" type="submit">❌ Fermer</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }) %>
+                <% } else { %>
+                    <tr><td colspan="8" style="color:#bbb;">Aucune position ouverte pour le moment.</td></tr>
+                <% } %>
+            </tbody>
+        </table>
+        <hr style="margin:32px 0 18px 0; border:none; border-top:1px solid #333;">
+        <h3>🔔 Derniers signaux reçus</h3>
+        <div id="signals-list">
+            <% if (last_signals && last_signals.length) { %>
+                <% last_signals.slice(-5).reverse().forEach(sig => { %>
+                    <div style="margin-bottom:8px;">
+                        <b><%= sig.symbol %> <%= sig.type %></b> |
+                        Entrée: <%= sig.entry || '-' %> |
+                        SL: <%= sig.sl || '-' %> |
+                        TP: <%= Array.isArray(sig.tp) ? sig.tp.join(', ') : (sig.tp || '-') %>
+                        <div style="font-size:0.95em;color:#aaa;">Reçu le <%= sig.time || '-' %></div>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <div style="color:#bbb;">Aucun signal récent détecté.</div>
+            <% } %>
+        </div>
+        <footer class="sticky-footer">
+            <hr style="margin-top:5px; margin-bottom:10px; border: none; border-top: 1px solid #3a3a3a;">
+            ILdavBot V1 — une solution simple, pour faire grandir vos ambitions de trading.<br>
+            © 2025 Tous droits réservés.
+        </footer>
+    </main>
+</div>
+<!-- Toast container (toasts sont ajoutés dynamiquement) -->
+<button class="theme-toggle" id="theme-toggle" title="Basculer mode clair/sombre">🌙</button>
+</body>
+</html>
