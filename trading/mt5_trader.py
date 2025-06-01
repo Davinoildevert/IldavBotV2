@@ -1,10 +1,10 @@
 from mt5.mt5_controller import MT5Controller
 import MetaTrader5 as mt5
 import threading
-from trading.break_even import watch_break_even
 import json
 import os
 import datetime
+from utils.logger import get_latency_logger
 
 OPEN_TRADES_PATH = os.path.join(os.path.dirname(__file__), '..', 'logs', 'open_trades.json')
 CLOSED_TRADES_PATH = os.path.join(os.path.dirname(__file__), '..', 'logs', 'closed_trades.json')
@@ -15,16 +15,10 @@ class MT5Trader:
         self.connected = False
         self.open_trades = []
         self.connect()
-        if self.config.get("break_even_enabled", False):
-            self.start_break_even_watcher()
+        # Suppression du break-even watcher
         self.start_closed_trades_watcher()
         self.start_open_trades_watcher()
-
-
-
-    def start_break_even_watcher(self):
-        t = threading.Thread(target=watch_break_even, args=(self.mt5,), daemon=True)
-        t.start()
+        self.latency_logger = get_latency_logger()
 
     def connect(self):
         self.connected = self.mt5.connect()
@@ -56,6 +50,8 @@ class MT5Trader:
 
 
     def place_order(self, signal, tp, lot):
+        import time
+        t_start = time.time()
         symbol = signal['symbol']
         symbol_map = {"GOLD": "XAUUSD"}
         symbol = symbol_map.get(symbol, symbol)
@@ -64,6 +60,9 @@ class MT5Trader:
         tp_val = float(tp) if tp else None
 
         tick = mt5.symbol_info_tick(symbol)
+        t_tick = time.time()
+        self.latency_logger.info(f"MT5 | Récupération tick | {symbol} | t_tick={t_tick} | delta={t_tick-t_start:.3f}s")
+
         if tick is None:
             info = mt5.symbol_info(symbol)
             market_status = "Actif" if info and info.visible else "Inactif (fermé ou désactivé)"
@@ -71,13 +70,19 @@ class MT5Trader:
             return {"error": f"Pas de tick pour {symbol} (marché fermé, week-end, ou problème symbole ?) Statut : {market_status}"}
 
         price = tick.ask if trade_type == "BUY" else tick.bid
+        t_price = time.time()
+        self.latency_logger.info(f"MT5 | Détermination prix entrée | {symbol} | t_price={t_price} | delta={t_price-t_tick:.3f}s")
 
         if not mt5.symbol_select(symbol, True):
+            t_select = time.time()
+            self.latency_logger.info(f"MT5 | Sélection symbole échouée | {symbol} | t_select={t_select} | delta={t_select-t_price:.3f}s")
             print(f"❌ Impossible de sélectionner le symbole {symbol}")
             return {"error": f"Symbol {symbol} not found or not enabled"}
 
         if not self.connected:
             if not self.connect():
+                t_conn = time.time()
+                self.latency_logger.info(f"MT5 | Connexion échouée | t_conn={t_conn} | delta={t_conn-t_price:.3f}s")
                 print("❌ Echec de connexion MT5")
                 return {"error": "MT5 not connected"}
 
@@ -107,7 +112,11 @@ class MT5Trader:
             "type_filling": mt5.ORDER_FILLING_RETURN,
         }
 
+        t_send = time.time()
+        self.latency_logger.info(f"MT5 | Envoi ordre | {symbol} | t_send={t_send} | delta={t_send-t_price:.3f}s | Request: {request}")
         result = mt5.order_send(request)
+        t_result = time.time()
+        self.latency_logger.info(f"MT5 | Réponse reçue | {symbol} | t_result={t_result} | delta={t_result-t_send:.3f}s | Résultat: {result}")
 
         if result is None:
             print("⛔ ERREUR: mt5.order_send a retourné None (demande refusée par MT5).")

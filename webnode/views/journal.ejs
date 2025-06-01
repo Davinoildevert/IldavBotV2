@@ -19,17 +19,19 @@
         <h3 class="sidebar-title" style="margin-top:30px;">MENU</h3>
         <nav>
             <ul class="sidebar-menu">
-                <li><a href="/dashboard" data-icon="📊"><span>Dashboard</span></a></li>
-                <li><a href="/trades" data-icon="📈"><span>Trades ouverts</span></a></li>
-                <li><a href="/journal" data-icon="📊"><span>Journal de trading</span></a></li>
-                <li><a href="/logs" data-icon="📝"><span>Logs</span></a></li>
-                <li><a href="/parametre" data-icon="⚙️"><span>Paramètres</span></a></li>
+                <li><a href="/dashboard" class="<%= (page === 'dashboard') ? 'active' : '' %>" data-icon="📊"><span>Dashboard</span></a></li>
+                <li><a href="/trades" class="<%= (page === 'trades') ? 'active' : '' %>" data-icon="📈"><span>Trades ouverts</span></a></li>
+                <li><a href="/journal" class="<%= (page === 'journal') ? 'active' : '' %>" data-icon="📒"><span>Journal de trading</span></a></li>
+                <li><a href="/logs" class="<%= (page === 'logs') ? 'active' : '' %>" data-icon="📝"><span>Logs</span></a></li>
+                <li><a href="/parametre" class="<%= (page === 'parametre') ? 'active' : '' %>" data-icon="⚙️"><span>Paramètres</span></a></li>
+                <li><a href="/guide" class="<%= (page === 'guide') ? 'active' : '' %>" data-icon="❓"><span>Guide</span></a></li>
+                <li><a href="/logout" data-icon="🚪" title="Déconnexion" style="color:#ff6464;font-weight:600;"><span>Déconnexion</span></a></li>
             </ul>
         </nav>
     </aside>
     <!-- MAIN CONTENT -->
     <main class="main-content">
-        <h1 class="main-title">📊 Journal des trades fermés / PNL</h1>
+        <h1 class="main-title">📒 Journal des trades fermés / PNL</h1>
         <% if (closed_trades && closed_trades.length) { 
             let pnl_total = 0, nb_trades = closed_trades.length, nb_gagnes = 0, nb_perdus = 0, gain_moy = 0, perte_moy = 0;
             closed_trades.forEach(t => { pnl_total += t.pnl; });
@@ -90,7 +92,7 @@
         <% } %>
         <footer class="sticky-footer">
             <hr style="margin-top:5px; margin-bottom:10px; border: none; border-top: 1px solid #3a3a3a;">
-            ILdevBot V1 — une solution simple, pour faire grandir vos ambitions de trading.<br>
+            ILdavBot V1 — une solution simple, pour faire grandir vos ambitions de trading.<br>
             © 2025 Tous droits réservés.
         </footer>
     </main>

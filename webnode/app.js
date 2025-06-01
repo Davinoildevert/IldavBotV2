@@ -7,6 +7,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const axios = require('axios');
 const session = require('express-session');
+const { exec } = require('child_process');
 
 const app = express();
 const server = http.createServer(app);
@@ -248,6 +249,18 @@ function broadcastDashboardUpdate() {
     const last_signals = loadJSON(path.join(__dirname, '..', 'logs', 'last_signals.json')) || [];
     io.emit('dashboard_update', { config, open_trades, last_signals });
 }
+
+app.post('/reset-logs', (req, res) => {
+    const scriptPath = path.join(__dirname, '..', 'utils', 'reset_logs.py');
+    exec(`python "${scriptPath}"`, (error, stdout, stderr) => {
+        if (error) {
+            console.error('Erreur lors de la réinitialisation des logs:', error, stderr);
+            return res.redirect('/dashboard?error=Erreur%20lors%20de%20la%20r%C3%A9initialisation%20des%20logs');
+        }
+        console.log(stdout);
+        res.redirect('/dashboard?message=Tous%20les%20journaux%20ont%20%C3%A9t%C3%A9%20r%C3%A9initialis%C3%A9s');
+    });
+});
 
 // Lance le serveur
 server.listen(3000, () => {

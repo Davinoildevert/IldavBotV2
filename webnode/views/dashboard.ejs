@@ -220,6 +220,10 @@
                 <div style="color:#bbb;">Aucun signal récent détecté.</div>
             <% } %>
         </div>
+        <!-- Bouton de réinitialisation des journaux -->
+        <form method="POST" action="/reset-logs" onsubmit="return confirm('⚠️ Cette action va effacer tous les journaux (logs, trades, signaux) et remettre à zéro l\'historique. Continuer ?');" style="margin-bottom:0; margin-top:32px;">
+            <button type="submit" class="custom-btn red" style="font-weight:bold;">🗑️ Effacer tous les journaux (logs, trades, signaux)</button>
+        </form>
         <footer class="sticky-footer">
             <hr style="margin-top:5px; margin-bottom:10px; border: none; border-top: 1px solid #3a3a3a;">
             ILdavBot V1 — une solution simple, pour faire grandir vos ambitions de trading.<br>

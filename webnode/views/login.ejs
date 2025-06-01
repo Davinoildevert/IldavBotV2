@@ -79,6 +79,74 @@
             margin-bottom: 12px;
             font-weight: 600;
         }
+        .sticky-footer {
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            padding: 10px 0;
+            background: #17181d;
+            color: #a0a0a0;
+            font-size: 0.9em;
+            border-top: 1px solid #3a3a3a;
+        }
+        @media (max-width: 600px) {
+            body {
+                margin: 0;
+                padding: 0;
+                min-height: 100vh;
+                background: #17181d;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+            .login-container {
+                max-width: 98vw;
+                margin: 32px auto 0 auto;
+                padding: 18px 6vw;
+                border-radius: 0 0 18px 18px;
+                box-shadow: 0 2px 12px rgba(0,0,0,0.13);
+            }
+            .login-title {
+                font-size: 1.2em;
+            }
+            .login-form input[type="password"],
+            .login-form input[type="text"] {
+                font-size: 1em;
+                padding: 10px 38px 10px 10px;
+            }
+            .toggle-pw {
+                font-size: 1.1em;
+                height: 28px;
+                width: 28px;
+            }
+            .login-form button[type="submit"] {
+                font-size: 1em;
+                padding: 10px 0;
+            }
+            .sticky-footer {
+                font-size: 0.85em;
+                padding: 8px 0;
+            }
+        }
+        @media (max-width: 400px) {
+            .login-container {
+                padding: 10px 2vw;
+            }
+            .login-title {
+                font-size: 1em;
+            }
+        }
+        @media (min-width: 601px) and (max-width: 900px) {
+            .login-container {
+                max-width: 420px;
+                margin: 40px auto 0 auto;
+                padding: 28px 32px;
+            }
+            .login-title {
+                font-size: 1.3em;
+            }
+        }
     </style>
 </head>
 <body>
@@ -96,6 +164,11 @@
             <button type="submit">Se connecter</button>
         </form>
     </div>
+    <footer class="sticky-footer">
+        <hr style="margin-top:5px; margin-bottom:10px; border: none; border-top: 1px solid #3a3a3a;">
+        ILdavBot V1 — une solution simple, pour faire grandir vos ambitions de trading.<br>
+        © 2025 Tous droits réservés.
+    </footer>
     <script>
     const pwInput = document.getElementById('password');
     const toggleBtn = document.getElementById('toggle-pw');

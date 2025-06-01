@@ -12,6 +12,18 @@ def setup_logger(log_file='logs/trading.log'):
             logging.StreamHandler()
         ]
     )
+
+def get_latency_logger(log_file='logs/latency_debug.log'):
+    os.makedirs(os.path.dirname(log_file), exist_ok=True)
+    logger = logging.getLogger('latency_logger')
+    if not logger.handlers:
+        handler = logging.FileHandler(log_file, encoding="utf-8")
+        formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s')
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+        logger.setLevel(logging.INFO)
+    return logger
+
 #10006427957E-H7UsYj
 
 #davino  "telegram_api_id": "25848648", "telegram_api_hash": "0929af402e72f4cd99f8eb562932fff7",

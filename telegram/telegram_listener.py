@@ -7,6 +7,7 @@ from trading.paper_trader import PaperTrader
 from trading.mt5_trader import MT5Trader
 import atexit
 import asyncio
+from utils.logger import get_latency_logger
 
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), '..', 'config', 'config.json')
 LAST_SIGNALS_PATH = os.path.join(os.path.dirname(__file__), '..', 'logs', 'last_signals.json')
@@ -42,6 +43,7 @@ class TelegramListener:
             self.trader = MT5Trader(config=self.config)
         else:
             self.trader = PaperTrader(config=self.config)
+        self.latency_logger = get_latency_logger()
     def show_stats(self):
         if hasattr(self, 'trader') and hasattr(self.trader, 'get_stats'):
             print("\n===== STATISTIQUES DE LA SESSION =====")
@@ -73,8 +75,9 @@ class TelegramListener:
         asyncio.create_task(self.watch_for_reset())
 
         @self.client.on(events.NewMessage(chats=self.channel if self.channel else None))
-        
         async def handler(event):
+            import time
+            t0 = time.time()
             # Recharge la config à chaque signal pour prendre le ON/OFF à chaud
             self.config = self.load_config()
             if not self.config.get("enabled", True):
@@ -100,9 +103,11 @@ class TelegramListener:
             )
 
             msg_time = event.message.date.strftime('%Y-%m-%d %H:%M:%S')
-
+            self.latency_logger.info(f"Signal reçu | Telegram | {msg_time} | Début traitement | t0={t0}")
             # 💡 APPEL CORRECT DU PARSER AVEC PATTERNS
             parsed = parse_signal(msg, patterns)
+            t1 = time.time()
+            self.latency_logger.info(f"Signal parsé | {msg_time} | t1={t1} | delta={t1-t0:.3f}s")
             if parsed:
                 info_msg = (
                     f"\n=== Signal de trading détecté ===\n"
@@ -128,10 +133,14 @@ class TelegramListener:
                 save_last_signal(signal_dict)
 
                 try:
+                    t2 = time.time()
                     result = self.trader.open_position(parsed)
+                    t3 = time.time()
+                    self.latency_logger.info(f"Ordre envoyé à MT5 | {msg_time} | t2={t2} | delta={t2-t1:.3f}s | Résultat: {result}")
+                    self.latency_logger.info(f"Réponse MT5 reçue | {msg_time} | t3={t3} | delta={t3-t2:.3f}s | Total: {t3-t0:.3f}s")
                     print(f"[OK] Résultat d'ouverture de position : {result}")
-
                 except Exception as e:
+                    self.latency_logger.error(f"Erreur lors de l'ouverture d'une position | {msg_time} | {e}")
                     logging.error(f"[Handler] Erreur lors de l'ouverture d'une position : {e}")
                     print(f"⛔ Erreur lors de l'ouverture d'une position : {e}")
 
