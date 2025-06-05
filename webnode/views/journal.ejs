@@ -32,13 +32,15 @@
     <!-- MAIN CONTENT -->
     <main class="main-content">
         <h1 class="main-title">📒 Journal des trades fermés / PNL</h1>
-        <% if (closed_trades && closed_trades.length) { 
-            let pnl_total = 0, nb_trades = closed_trades.length, nb_gagnes = 0, nb_perdus = 0, gain_moy = 0, perte_moy = 0;
-            closed_trades.forEach(t => { pnl_total += t.pnl; });
-            nb_gagnes = closed_trades.filter(t => t.pnl > 0).length;
-            nb_perdus = closed_trades.filter(t => t.pnl <= 0).length;
-            gain_moy = nb_gagnes ? (closed_trades.filter(t => t.pnl > 0).reduce((a,b) => a + b.pnl, 0) / nb_gagnes) : 0;
-            perte_moy = nb_perdus ? (closed_trades.filter(t => t.pnl <= 0).reduce((a,b) => a + b.pnl, 0) / nb_perdus) : 0;
+        <% 
+            let pnl_total = 0, nb_trades = closed_trades ? closed_trades.length : 0, nb_gagnes = 0, nb_perdus = 0, gain_moy = 0, perte_moy = 0;
+            if (closed_trades && closed_trades.length) {
+                closed_trades.forEach(t => { pnl_total += t.pnl; });
+                nb_gagnes = closed_trades.filter(t => t.pnl > 0).length;
+                nb_perdus = closed_trades.filter(t => t.pnl <= 0).length;
+                gain_moy = nb_gagnes ? (closed_trades.filter(t => t.pnl > 0).reduce((a,b) => a + b.pnl, 0) / nb_gagnes) : 0;
+                perte_moy = nb_perdus ? (closed_trades.filter(t => t.pnl <= 0).reduce((a,b) => a + b.pnl, 0) / nb_perdus) : 0;
+            }
             let winrate = nb_trades ? (nb_gagnes / nb_trades * 100) : 0;
         %>
         <div class="card-row">
@@ -46,6 +48,7 @@
             <div class="custom-card"><div class="card-title">Winrate</div><div class="big-icon" style="font-size:2em;"><%= winrate.toFixed(2) %> %</div></div>
             <div class="custom-card"><div class="card-title">Gain moyen</div><div class="big-icon" style="font-size:2em;"><%= gain_moy.toFixed(2) %> €</div></div>
             <div class="custom-card"><div class="card-title">Perte moyenne</div><div class="big-icon" style="font-size:2em;"><%= perte_moy.toFixed(2) %> €</div></div>
+            <div class="custom-card"><div class="card-title">Nombre de trades</div><div class="big-icon" style="font-size:2em;"><%= nb_trades %></div></div>
         </div>
         <table>
             <thead>
@@ -67,29 +70,30 @@
                 </tr>
             </thead>
             <tbody>
-                <% closed_trades.slice().sort((a,b) => (b.close_time||0)-(a.close_time||0)).forEach(trade => { %>
-                    <tr>
-                        <td><%= trade.ticket %></td>
-                        <td><%= trade.symbol %></td>
-                        <td><%= trade.type %></td>
-                        <td><%= trade.lot %></td>
-                        <td><%= trade.open_time ? new Date(trade.open_time*1000).toLocaleString('fr-FR') : '-' %></td>
-                        <td><%= trade.close_time ? new Date(trade.close_time*1000).toLocaleString('fr-FR') : '-' %></td>
-                        <td><%= trade.entry %></td>
-                        <td><%= trade.exit %></td>
-                        <td><%= trade.tp %></td>
-                        <td><%= trade.sl %></td>
-                        <td><%= trade.pnl %></td>
-                        <td><%= trade.exit_reason || '' %></td>
-                        <td><%= trade.commission || '' %></td>
-                        <td><%= trade.swap || '' %></td>
-                    </tr>
-                <% }) %>
+                <% if (closed_trades && closed_trades.length) { %>
+                    <% closed_trades.slice().sort((a,b) => (b.close_time||0)-(a.close_time||0)).forEach(trade => { %>
+                        <tr>
+                            <td><%= trade.ticket %></td>
+                            <td><%= trade.symbol %></td>
+                            <td><%= trade.type %></td>
+                            <td><%= trade.lot %></td>
+                            <td><%= trade.open_time ? new Date(trade.open_time*1000).toLocaleString('fr-FR') : '-' %></td>
+                            <td><%= trade.close_time ? new Date(trade.close_time*1000).toLocaleString('fr-FR') : '-' %></td>
+                            <td><%= trade.entry %></td>
+                            <td><%= trade.exit %></td>
+                            <td><%= trade.tp %></td>
+                            <td><%= trade.sl %></td>
+                            <td><%= trade.pnl %></td>
+                            <td><%= trade.exit_reason || '' %></td>
+                            <td><%= trade.commission || '' %></td>
+                            <td><%= trade.swap || '' %></td>
+                        </tr>
+                    <% }) %>
+                <% } else { %>
+                    <tr><td colspan="14" style="text-align:center;color:#bbb;">Aucun trade fermé pour l’instant.</td></tr>
+                <% } %>
             </tbody>
         </table>
-        <% } else { %>
-            <div style="color:#bbb;">Aucun trade fermé pour l’instant.</div>
-        <% } %>
         <footer class="sticky-footer">
             <hr style="margin-top:5px; margin-bottom:10px; border: none; border-top: 1px solid #3a3a3a;">
             ILdavBot V1 — une solution simple, pour faire grandir vos ambitions de trading.<br>

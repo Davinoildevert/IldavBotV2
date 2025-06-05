@@ -1,0 +1,912 @@
+[
+  {
+    "symbol": "EURCAD",
+    "type": "SELL",
+    "entry": null,
+    "sl": 1.57,
+    "tp": [
+      1.562,
+      1.559,
+      1.554
+    ],
+    "time": "2025-06-02 07:55:25",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "SELL EURCAD  1.56400\nSL   1.57000\nTP 1.56200\nTP 1.55900\nTP 1.55400"
+  },
+  {
+    "symbol": "EURCAD",
+    "type": "SELL",
+    "entry": null,
+    "sl": 1.57,
+    "tp": [
+      1.562,
+      1.559,
+      1.554
+    ],
+    "time": "2025-06-02 07:55:30",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "SELL EURCAD  1.56400\nSL   1.57000\nTP 1.56200\nTP 1.55900\nTP 1.55400"
+  },
+  {
+    "symbol": "GBPCAD",
+    "type": "SELL",
+    "entry": null,
+    "sl": 1.86,
+    "tp": [
+      1.852,
+      1.849,
+      1.844
+    ],
+    "time": "2025-06-02 07:56:29",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "SELL GBPCAD  1.85400\nSL   1.86000\nTP 1.85200\nTP 1.84900\nTP 1.84400"
+  },
+  {
+    "symbol": "GBPCAD",
+    "type": "SELL",
+    "entry": null,
+    "sl": 1.86,
+    "tp": [
+      1.852,
+      1.849,
+      1.844
+    ],
+    "time": "2025-06-02 07:56:33",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "SELL GBPCAD  1.85400\nSL   1.86000\nTP 1.85200\nTP 1.84900\nTP 1.84400"
+  },
+  {
+    "symbol": "EURCAD",
+    "type": "SELL",
+    "entry": null,
+    "sl": 1.5715,
+    "tp": [
+      1.5635,
+      1.5605,
+      1.5555
+    ],
+    "time": "2025-06-02 09:11:46",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "SELL EURCAD  1.56550\nSL   1.571500\nTP 1.56350\nTP 1.56050\nTP 1.55550"
+  },
+  {
+    "symbol": "EURCAD",
+    "type": "SELL",
+    "entry": null,
+    "sl": 1.5715,
+    "tp": [
+      1.5635,
+      1.5605,
+      1.5555
+    ],
+    "time": "2025-06-02 09:11:52",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "SELL EURCAD  1.56550\nSL   1.571500\nTP 1.56350\nTP 1.56050\nTP 1.55550"
+  },
+  {
+    "symbol": "GBPCAD",
+    "type": "SELL",
+    "entry": null,
+    "sl": 1.86,
+    "tp": [
+      1.853,
+      1.85,
+      1.845
+    ],
+    "time": "2025-06-02 10:01:01",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "SELL GBPCAD  1.85500\nSL   1.86000\nTP 1.85300\nTP 1.85000\nTP 1.84500"
+  },
+  {
+    "symbol": "GBPCAD",
+    "type": "SELL",
+    "entry": null,
+    "sl": 1.86,
+    "tp": [
+      1.853,
+      1.85,
+      1.845
+    ],
+    "time": "2025-06-02 10:01:04",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "SELL GBPCAD  1.85500\nSL   1.86000\nTP 1.85300\nTP 1.85000\nTP 1.84500"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 3343.0,
+    "tp": [
+      3350.0,
+      3353.0
+    ],
+    "time": "2025-06-02 10:57:21",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY XAUUSD  3348.00\nSL   3343.00\nTP 3350.00\nTP 3353.00\n   \n \n   l"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 3343.0,
+    "tp": [
+      3350.0,
+      3353.0,
+      3365.0
+    ],
+    "time": "2025-06-02 10:59:45",
+    "channel": "Forex b\u2019darija \ud83d\udcca",
+    "sender": "Forex b\u2019darija \ud83d\udcca",
+    "raw_message": "BUY XAUUSD 3348\n\nSL 3343\n\nTP 3350\nTP 3353\nTP 3365"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 3354.0,
+    "tp": [
+      3362.0,
+      3365.0,
+      3377.0
+    ],
+    "time": "2025-06-02 12:42:21",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY XAUUSD 3360\n\nSL 3354\n\nTP 3362\nTP 3365\nTP 3377"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 3357.0,
+    "tp": [
+      3365.0,
+      3368.0,
+      3380.0
+    ],
+    "time": "2025-06-03 08:08:34",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY XAUUSD 3363\n\nSL 3357\n\nTP 3365\nTP 3368\nTP 3380"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 3355.0,
+    "tp": [
+      3363.0,
+      3366.0,
+      3378.0
+    ],
+    "time": "2025-06-03 08:10:37",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY XAUUSD 3361\n\nSL 3355\n\nTP 3363\nTP 3366\nTP 3378"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 3355.0,
+    "tp": [
+      3363.0,
+      3366.0,
+      3378.0
+    ],
+    "time": "2025-06-03 08:10:41",
+    "channel": "Forex b\u2019darija \ud83d\udcca",
+    "sender": "Forex b\u2019darija \ud83d\udcca",
+    "raw_message": "BUY XAUUSD 3361\n\nSL 3355\n\nTP 3363\nTP 3366\nTP 3378"
+  },
+  {
+    "symbol": "EURJPY",
+    "type": "BUY",
+    "entry": null,
+    "sl": 162.4,
+    "tp": [
+      163.1,
+      163.4,
+      163.9
+    ],
+    "time": "2025-06-03 09:03:43",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY EURJPY   162.900\nSL   162.400\nTP 163.100\nTP 163.400\nTP 163.900"
+  },
+  {
+    "symbol": "EURJPY",
+    "type": "BUY",
+    "entry": null,
+    "sl": 162.4,
+    "tp": [
+      163.1,
+      163.4,
+      163.9
+    ],
+    "time": "2025-06-03 09:03:48",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY EURJPY   162.900\nSL   162.400\nTP 163.100\nTP 163.400\nTP 163.900"
+  },
+  {
+    "symbol": "GBPJPY",
+    "type": "BUY",
+    "entry": null,
+    "sl": 192.45,
+    "tp": [
+      193.15,
+      193.45,
+      193.95
+    ],
+    "time": "2025-06-03 09:05:10",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY GBPJPY  192.950\nSL   192.450\nTP 193.150\nTP 193.450\nTP 193.950"
+  },
+  {
+    "symbol": "GBPJPY",
+    "type": "BUY",
+    "entry": null,
+    "sl": 192.45,
+    "tp": [
+      193.15,
+      193.45,
+      193.95
+    ],
+    "time": "2025-06-03 09:05:19",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY GBPJPY  192.950\nSL   192.450\nTP 193.150\nTP 193.450\nTP 193.950"
+  },
+  {
+    "symbol": "EURCAD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 1.5607,
+    "tp": [
+      1.5677,
+      1.5707,
+      1.5757
+    ],
+    "time": "2025-06-03 09:11:58",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY EURCAD  1.56570\nSL   1.56070\nTP 1.56770\nTP 1.57070\nTP 1.57570"
+  },
+  {
+    "symbol": "EURCAD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 1.5607,
+    "tp": [
+      1.5677,
+      1.5707,
+      1.5757
+    ],
+    "time": "2025-06-03 09:12:02",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY EURCAD  1.56570\nSL   1.56070\nTP 1.56770\nTP 1.57070\nTP 1.57570"
+  },
+  {
+    "symbol": "GBPCAD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 1.8505,
+    "tp": [
+      1.8575,
+      1.8605,
+      1.8655
+    ],
+    "time": "2025-06-03 09:14:51",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY GBPCAD  1.85550\nSL   1.85050\nTP 1.85750\nTP 1.86050\nTP 1.86550"
+  },
+  {
+    "symbol": "GBPCAD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 1.8505,
+    "tp": [
+      1.8575,
+      1.8605,
+      1.8655
+    ],
+    "time": "2025-06-03 09:14:56",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY GBPCAD  1.85550\nSL   1.85050\nTP 1.85750\nTP 1.86050\nTP 1.86550"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "SELL",
+    "entry": null,
+    "sl": 3364.5,
+    "tp": [
+      3357.5,
+      3354.5
+    ],
+    "time": "2025-06-03 09:37:17",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "SELL XAUUSD  3359.50\nSL   3364.50\nTP 3357.50\nTP 3354.50\n   \n \n   l"
+  },
+  {
+    "symbol": "EURCAD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 1.559,
+    "tp": [
+      1.566,
+      1.569,
+      1.574
+    ],
+    "time": "2025-06-03 11:47:57",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY EURCAD  1.56400\nSL   1.55900\nTP 1.56600\nTP 1.56900\nTP 1.57400"
+  },
+  {
+    "symbol": "EURCAD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 1.559,
+    "tp": [
+      1.566,
+      1.569,
+      1.574
+    ],
+    "time": "2025-06-03 11:48:02",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY EURCAD  1.56400\nSL   1.55900\nTP 1.56600\nTP 1.56900\nTP 1.57400"
+  },
+  {
+    "symbol": "GBPCAD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 1.849,
+    "tp": [
+      1.856,
+      1.859,
+      1.864
+    ],
+    "time": "2025-06-03 11:49:10",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY GBPCAD  1.85400\nSL   1.84900\nTP 1.85600\nTP 1.85900\nTP 1.86400"
+  },
+  {
+    "symbol": "GBPCAD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 1.849,
+    "tp": [
+      1.856,
+      1.859,
+      1.864
+    ],
+    "time": "2025-06-03 11:49:14",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY GBPCAD  1.85400\nSL   1.84900\nTP 1.85600\nTP 1.85900\nTP 1.86400"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 3346.0,
+    "tp": [
+      3354.0,
+      3357.0,
+      3369.0
+    ],
+    "time": "2025-06-03 12:17:31",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY XAUUSD 3352\n\nSL 3346\n\nTP 3354\nTP 3357\nTP 3369"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 3345.0,
+    "tp": [
+      3353.0,
+      3356.0,
+      3368.0
+    ],
+    "time": "2025-06-03 12:18:13",
+    "channel": "Forex b\u2019darija \ud83d\udcca",
+    "sender": "Forex b\u2019darija \ud83d\udcca",
+    "raw_message": "BUY XAUUSD 3351\n\nSL 3345\n\nTP 3353\nTP 3356\nTP 3368"
+  },
+  {
+    "symbol": "EURCAD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 1.556,
+    "tp": [
+      1.564,
+      1.567,
+      1.572
+    ],
+    "time": "2025-06-03 12:52:32",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY EURCAD  1.56200\nSL   1.55600\nTP 1.56400\nTP 1.56700\nTP 1.57200"
+  },
+  {
+    "symbol": "EURCAD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 1.556,
+    "tp": [
+      1.564,
+      1.567,
+      1.572
+    ],
+    "time": "2025-06-03 12:52:34",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY EURCAD  1.56200\nSL   1.55600\nTP 1.56400\nTP 1.56700\nTP 1.57200"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "SELL",
+    "entry": null,
+    "sl": 3366.0,
+    "tp": [
+      3359.0,
+      3356.0
+    ],
+    "time": "2025-06-03 13:19:26",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "SELL XAUUSD  3361.00\nSL   3366.00\nTP 3359.00\nTP 3356.00\n   \n \n   l"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "SELL",
+    "entry": null,
+    "sl": 3366.0,
+    "tp": [
+      3358.0,
+      3356.0,
+      3350.0
+    ],
+    "time": "2025-06-03 13:28:50",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "SELL XAUUSD  3360.00\nSL   3366.00\nTP 3358.00\nTP 3356.00\nTP 3350.00\n   \n \n   l"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "SELL",
+    "entry": null,
+    "sl": 3366.0,
+    "tp": [
+      3358.0,
+      3356.0,
+      3350.0
+    ],
+    "time": "2025-06-03 13:36:59",
+    "channel": "Forex b\u2019darija \ud83d\udcca",
+    "sender": "Forex b\u2019darija \ud83d\udcca",
+    "raw_message": "SELL XAUUSD 3360\n\nSL 3366\n\nTP 3358\nTP 3356\nTP 3350"
+  },
+  {
+    "symbol": "GBPCAD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 1.8495,
+    "tp": [
+      1.8565,
+      1.8595,
+      1.8645
+    ],
+    "time": "2025-06-04 06:43:08",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY GBPCAD  1.85450\nSL   1.84950\nTP 1.85650\nTP 1.85950\nTP 1.86450"
+  },
+  {
+    "symbol": "GBPCAD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 1.8495,
+    "tp": [
+      1.8565,
+      1.8595,
+      1.8645
+    ],
+    "time": "2025-06-04 06:43:12",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY GBPCAD  1.85450\nSL   1.84950\nTP 1.85650\nTP 1.85950\nTP 1.86450"
+  },
+  {
+    "symbol": "GBPUSD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 1.346,
+    "tp": [
+      1.353,
+      1.356,
+      1.361
+    ],
+    "time": "2025-06-04 06:44:04",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY GBPUSD   1.35100\nSL   1.34600\nTP 1.35300\nTP 1.35600\nTP 1.36100"
+  },
+  {
+    "symbol": "GBPUSD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 1.346,
+    "tp": [
+      1.353,
+      1.356,
+      1.361
+    ],
+    "time": "2025-06-04 06:44:08",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY GBPUSD   1.35100\nSL   1.34600\nTP 1.35300\nTP 1.35600\nTP 1.36100"
+  },
+  {
+    "symbol": "EURUSD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 1.13189,
+    "tp": [
+      1.1388,
+      1.1418,
+      1.1468
+    ],
+    "time": "2025-06-04 06:45:10",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY EURUSD  \nSL   1.13189\nTP 1.13880\nTP 1.14180\nTP 1.14680"
+  },
+  {
+    "symbol": "EURUSD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 1.13189,
+    "tp": [
+      1.1388,
+      1.1418,
+      1.1468
+    ],
+    "time": "2025-06-04 06:45:13",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY EURUSD  \nSL   1.13189\nTP 1.13880\nTP 1.14180\nTP 1.14680"
+  },
+  {
+    "symbol": "EURCAD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 1.555,
+    "tp": [
+      1.562,
+      1.565,
+      1.57
+    ],
+    "time": "2025-06-04 06:46:05",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY EURCAD  1.56000\nSL   1.55500\nTP 1.56200\nTP 1.56500\nTP 1.57000"
+  },
+  {
+    "symbol": "EURCAD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 1.555,
+    "tp": [
+      1.562,
+      1.565,
+      1.57
+    ],
+    "time": "2025-06-04 06:46:08",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY EURCAD  1.56000\nSL   1.55500\nTP 1.56200\nTP 1.56500\nTP 1.57000"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "SELL",
+    "entry": null,
+    "sl": 3361.0,
+    "tp": [
+      3353.0,
+      3350.0,
+      3340.0
+    ],
+    "time": "2025-06-04 08:05:58",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "SELL XAUUSD 3355\n\nSL 3361\n\nTP 3353\nTP 3350\nTP 3340"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 3357.0,
+    "tp": [
+      3365.0,
+      3368.0,
+      3380.0
+    ],
+    "time": "2025-06-04 09:10:11",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY XAUUSD 3363\n\nSL 3357\n\nTP 3365\nTP 3368\nTP 3380"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 3355.0,
+    "tp": [
+      3362.0,
+      3365.0,
+      3377.0
+    ],
+    "time": "2025-06-04 09:14:22",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY XAUUSD 3360\n\nSL 3355\n\nTP 3362\nTP 3365\nTP 3377"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 3345.0,
+    "tp": [
+      3352.0,
+      3355.0
+    ],
+    "time": "2025-06-04 12:32:48",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY XAUUSD  3350.00\nSL   3345.00\nTP 3352.00\nTP 3355.00\n   \n \n   l"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 3345.0,
+    "tp": [
+      3355.0,
+      3358.0,
+      3363.0
+    ],
+    "time": "2025-06-04 12:33:46",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY XAUUSD  3353.00\nSL   3345.00\nTP 3355.00\nTP 3358.00\nTP 3363.00\n   \n \n   l"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 3345.0,
+    "tp": [
+      3352.0,
+      3355.0,
+      3367.0
+    ],
+    "time": "2025-06-04 12:47:04",
+    "channel": "Forex b\u2019darija \ud83d\udcca",
+    "sender": "Forex b\u2019darija \ud83d\udcca",
+    "raw_message": "BUY XAUUSD 3350\n\nSL 3345\n\nTP 3352\nTP 3355\nTP 3367"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 3359.0,
+    "tp": [
+      3367.0,
+      3370.0,
+      3380.0
+    ],
+    "time": "2025-06-04 14:23:33",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY XAUUSD 3365\n\nSL 3359\n\nTP 3367\nTP 3370\nTP 3380"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 3359.0,
+    "tp": [
+      3367.0,
+      3370.0,
+      3380.0
+    ],
+    "time": "2025-06-04 14:37:49",
+    "channel": "Forex b\u2019darija \ud83d\udcca",
+    "sender": "Forex b\u2019darija \ud83d\udcca",
+    "raw_message": "BUY XAUUSD 3365\n\nSL 3359\n\nTP 3367\nTP 3370\nTP 3380"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 3367.0,
+    "tp": [
+      3375.0,
+      3378.0,
+      3390.0
+    ],
+    "time": "2025-06-05 07:32:19",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY XAUUSD 3373\n\nSL 3367\n\nTP 3375\nTP 3378\nTP 3390"
+  },
+  {
+    "symbol": "EURUSD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 1.1355,
+    "tp": [
+      1.1425,
+      1.1455,
+      1.1505
+    ],
+    "time": "2025-06-05 08:42:42",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY EURUSD  \nSL   1.13550\nTP 1.14250\nTP 1.14550\nTP 1.15050"
+  },
+  {
+    "symbol": "EURUSD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 1.1355,
+    "tp": [
+      1.1425,
+      1.1455,
+      1.1505
+    ],
+    "time": "2025-06-05 08:42:44",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY EURUSD  \nSL   1.13550\nTP 1.14250\nTP 1.14550\nTP 1.15050"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 3367.0,
+    "tp": [
+      3375.0,
+      3378.0,
+      3390.0
+    ],
+    "time": "2025-06-05 09:15:43",
+    "channel": "Forex b\u2019darija \ud83d\udcca",
+    "sender": "Forex b\u2019darija \ud83d\udcca",
+    "raw_message": "BUY XAUUSD 3373\n\nSL 3367\n\nTP 3375\nTP 3378\nTP 3390"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "SELL",
+    "entry": null,
+    "sl": 3400.0,
+    "tp": [
+      3393.0,
+      3390.0
+    ],
+    "time": "2025-06-05 12:37:22",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "SELL XAUUSD  3395.00\nSL   3400.00\nTP 3393.00\nTP 3390.00\n   \n \n   l"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "SELL",
+    "entry": null,
+    "sl": 3400.0,
+    "tp": [
+      3393.0,
+      3390.0,
+      3385.0
+    ],
+    "time": "2025-06-05 12:38:48",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "SELL XAUUSD  3395.00\nSL   3400.00\nTP 3393.00\nTP 3390.00\nTP 3385.00\n   \n \n   l"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "SELL",
+    "entry": null,
+    "sl": 3400.0,
+    "tp": [
+      3393.0,
+      3390.0,
+      3385.0
+    ],
+    "time": "2025-06-05 12:38:56",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "SELL XAUUSD  3395.00\nSL   3400.00\nTP 3393.00\nTP 3390.00\nTP 3385.00\n   \n \n   l"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "SELL",
+    "entry": null,
+    "sl": 3400.0,
+    "tp": [
+      3393.0,
+      3390.0,
+      3385.0
+    ],
+    "time": "2025-06-05 12:51:02",
+    "channel": "Forex b\u2019darija \ud83d\udcca",
+    "sender": "Forex b\u2019darija \ud83d\udcca",
+    "raw_message": "SELL XAUUSD 3395\n\nSL 3400\n\nTP 3393\nTP 3390\nTP 3385"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 3370.0,
+    "tp": [
+      3377.0,
+      3380.0,
+      3385.0
+    ],
+    "time": "2025-06-05 13:09:51",
+    "channel": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "sender": "Forex B\u2019darija VIP 3.0 \ud83d\udc51",
+    "raw_message": "BUY XAUUSD  3375.00\nSL   3370.00\nTP 3377.00\nTP 3380.00\nTP 3385.00\n   \n \n   l"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 3370.0,
+    "tp": [
+      3377.0,
+      3380.0,
+      3385.0
+    ],
+    "time": "2025-06-05 13:23:12",
+    "channel": "Forex b\u2019darija \ud83d\udcca",
+    "sender": "Forex b\u2019darija \ud83d\udcca",
+    "raw_message": "BUY XAUUSD 3375\n\nSL 3370\n\nTP 3377\nTP 3380\nTP 3385"
+  },
+  {
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "entry": null,
+    "sl": 3370.0,
+    "tp": [
+      3377.0,
+      3380.0,
+      3385.0
+    ],
+    "time": "2025-06-05 13:24:00",
+    "channel": "Forex b\u2019darija \ud83d\udcca",
+    "sender": "Forex b\u2019darija \ud83d\udcca",
+    "raw_message": "BUY XAUUSD 3375\n\nSL 3370\n\nTP 3377\nTP 3380\nTP 3385"
+  }
+]

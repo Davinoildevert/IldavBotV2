@@ -140,7 +140,9 @@ app.get('/guide', (req, res) => {
 
 app.post('/pause', async (req, res) => {
     try {
-        await axios.post('http://127.0.0.1:5005/pause');
+        await axios.post('http://127.0.0.1:5005/pause', {}, {
+            headers: { 'x-api-key': process.env.API_SECRET_KEY }
+        });
         broadcastDashboardUpdate();
         res.redirect('/dashboard?message=Bot%20en%20pause');
     } catch (e) {
@@ -150,7 +152,9 @@ app.post('/pause', async (req, res) => {
 
 app.post('/play', async (req, res) => {
     try {
-        await axios.post('http://127.0.0.1:5005/play');
+        await axios.post('http://127.0.0.1:5005/play', {}, {
+            headers: { 'x-api-key': process.env.API_SECRET_KEY }
+        });
         broadcastDashboardUpdate();
         res.redirect('/dashboard?message=Bot%20activ%C3%A9');
     } catch (e) {
@@ -160,7 +164,9 @@ app.post('/play', async (req, res) => {
 
 app.post('/reset', async (req, res) => {
     try {
-        await axios.post('http://127.0.0.1:5005/reset');
+        await axios.post('http://127.0.0.1:5005/reset', {}, {
+            headers: { 'x-api-key': process.env.API_SECRET_KEY }
+        });
         broadcastDashboardUpdate();
         res.redirect('/dashboard?message=Red%C3%A9marrage%20demand%C3%A9');
     } catch (e) {
@@ -171,7 +177,9 @@ app.post('/reset', async (req, res) => {
 app.post('/close-trade', async (req, res) => {
     const ticket = req.body.ticket;
     try {
-        await axios.post('http://127.0.0.1:5005/close-trade', { ticket });
+        await axios.post('http://127.0.0.1:5005/close-trade', { ticket }, {
+            headers: { 'x-api-key': process.env.API_SECRET_KEY }
+        });
         broadcastDashboardUpdate();
         const referer = req.headers.referer || '';
         if (referer.includes('/trades')) {

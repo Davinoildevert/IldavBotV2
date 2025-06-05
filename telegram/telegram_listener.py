@@ -29,8 +29,15 @@ class TelegramListener:
         self.config = self.load_config()
         self.api_id = int(self.config.get("telegram_api_id", 0))
         self.api_hash = self.config.get("telegram_api_hash", "")
-        self.channel = self.config.get("telegram_channel", "")
-       # PATCH SWITCH SESSION:
+        # Conversion explicite des IDs de canaux en int pour robustesse
+        raw_channels = self.config.get("telegram_channel", [])
+        if isinstance(raw_channels, list):
+            self.channel = [int(c) for c in raw_channels if str(c).lstrip("-").isdigit()]
+        elif isinstance(raw_channels, str):
+            self.channel = [int(raw_channels)] if raw_channels.lstrip("-").isdigit() else []
+        else:
+            self.channel = []
+        # PATCH SWITCH SESSION:
         self.session_name = self.config.get("telegram_session", "dav.session")
         if not os.path.isabs(self.session_name):
             self.session_name = os.path.join(os.path.dirname(__file__), '..', 'telegram', self.session_name)

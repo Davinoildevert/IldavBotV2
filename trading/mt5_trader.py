@@ -105,7 +105,7 @@ class MT5Trader:
             "price": price,
             "sl": sl,
             "tp": tp_val,
-            "deviation": 50,
+            "deviation": 30,
             "magic": 123456,
             "comment": "TelegramAuto",
             "type_time": mt5.ORDER_TIME_GTC,
@@ -180,6 +180,24 @@ class MT5Trader:
             return
         for d in deals:
             deal = d._asdict()
+            # Détection de la raison de sortie
+            exit_reason = ''
+            comment = deal.get('comment', '').lower()
+            entry = deal.get('price')
+            exit_price = deal.get('price')
+            sl = deal.get('sl', None)
+            tp = deal.get('tp', None)
+            # Si le commentaire contient tp/sl, on le met
+            if 'tp' in comment:
+                exit_reason = 'TP'
+            elif 'sl' in comment:
+                exit_reason = 'SL'
+            elif 'webclose' in comment or 'manual' in comment:
+                exit_reason = 'Manual'
+            elif 'telegramauto' in comment or 'bot' in comment:
+                exit_reason = 'Bot'
+            else:
+                exit_reason = ''
             trade = {
                 "ticket": deal.get('ticket'),
                 "symbol": deal.get('symbol'),
@@ -192,12 +210,12 @@ class MT5Trader:
                 "tp": "",  # deals n'ont pas TP/SL mais tu peux le loguer si tu les retrouves via une autre table
                 "sl": "",
                 "pnl": deal.get('profit'),
-                "exit_reason": deal.get('comment', ''),
+                "exit_reason": exit_reason,
                 "commission": deal.get('commission', 0.0),
                 "swap": deal.get('swap', 0.0)
             }
             self.log_closed_trade(trade)
-        print(f"{len(deals)} trades fermés journalisés.")
+        # print(f"{len(deals)} trades fermés journalisés.")
 
 
 

@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set "VIRTUAL_ENV=C:\Users\claria\Desktop\telegram\mt5_trading_assistant\env"
+set "VIRTUAL_ENV=C:\Users\ILdav201\Desktop\IldavBotV2\env"
 
 if not defined PROMPT set PROMPT=$P$G
 

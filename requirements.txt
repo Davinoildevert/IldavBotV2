@@ -3,3 +3,4 @@ loguru
 MetaTrader5
 telethon
 streamlit
+flask
