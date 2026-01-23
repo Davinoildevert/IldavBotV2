@@ -18,3 +18,4 @@ Thumbs.db
 #*.csv
 #*.log
 #*.json
+env/

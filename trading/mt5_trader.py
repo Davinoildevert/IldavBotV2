@@ -15,9 +15,11 @@ class MT5Trader:
         self.connected = False
         self.open_trades = []
         self.connect()
-        # Suppression du break-even watcher
-        self.start_closed_trades_watcher()
-        self.start_open_trades_watcher()
+
+        if self.connected:
+            self.start_closed_trades_watcher()
+            self.start_open_trades_watcher()
+
         self.latency_logger = get_latency_logger()
         self.last_trade_time = {}
 
@@ -53,6 +55,8 @@ class MT5Trader:
                 return True
 
         return False
+    def is_mt5_ready(self):
+        return self.connected and mt5.initialize()
 
     def can_open_trade(self, signal):
        
@@ -139,8 +143,11 @@ class MT5Trader:
     def apply_break_even(self):
         """
         Passe SL à break-even (+ buffer) pour toutes les positions qui ont atteint TP1.
-        Ne change PAS ton système N TP = N trades.
         """
+        # ⛔ MT5 pas prêt
+        if not self.connected:
+            return
+
         be_cfg = self.config.get("break_even", {})
         if not be_cfg.get("enabled", False):
             return
@@ -150,7 +157,7 @@ class MT5Trader:
 
         positions = self.mt5.get_positions()
         if not positions:
-            return
+            return  # ✅ normal, pas de print
 
         for p in positions:
             try:
@@ -172,52 +179,48 @@ class MT5Trader:
                 point = info.point
                 price_now = tick.bid if trade_type == 0 else tick.ask
 
-                # Déjà sécurisé ? (SL au-dessus/à entry pour BUY, ou en dessous/à entry pour SELL)
-                if sl and entry:
+                # Déjà sécurisé
+                if sl:
                     if trade_type == 0 and float(sl) >= float(entry):
                         continue
                     if trade_type == 1 and float(sl) <= float(entry):
                         continue
 
-                # Trigger = TP1 atteint
+                # Trigger TP1
                 if use_tp1_as_trigger:
                     tp1 = self.get_tp1_from_open_trade(symbol, trade_type)
                     if not tp1:
                         continue
 
-                    if trade_type == 0:  # BUY -> prix doit >= tp1
+                    if trade_type == 0:
                         if price_now < tp1:
                             continue
                         new_sl = float(entry) + buffer_points * point
-                    else:  # SELL -> prix doit <= tp1
+                    else:
                         if price_now > tp1:
                             continue
                         new_sl = float(entry) - buffer_points * point
                 else:
-                    # si tu veux plus tard RR trigger, on l'ajoutera ici
-                    continue
-                
-                # évite de spam SLTP si déjà au bon niveau
-                if trade_type == 0 and float(sl) >= float(entry) + buffer_points * point:
-                    continue
-                if trade_type == 1 and float(sl) <= float(entry) - buffer_points * point:
                     continue
 
+                # évite double modification
+                if sl:
+                    if trade_type == 0 and float(sl) >= new_sl:
+                        continue
+                    if trade_type == 1 and float(sl) <= new_sl:
+                        continue
 
-                # Envoi modification SL
                 res = self.modify_sl(ticket, symbol, new_sl, tp=tp)
-                if res is None:
-                    print(f"⚠️ Break-even: aucune réponse MT5 pour ticket={ticket}")
+                if not res:
                     continue
 
                 if res.retcode == mt5.TRADE_RETCODE_DONE:
-                    print(f"🟢 Break-even appliqué: ticket={ticket} | {symbol} | new_sl={new_sl}")
-                else:
-                    print(f"⚠️ Break-even refusé: ticket={ticket} | retcode={res.retcode} | {res.comment}")
+                    print(f"🟢 Break-even appliqué: {symbol} | ticket={ticket}")
+                # ❌ PAS DE PRINT SINON
 
-            except Exception as e:
-                print(f"⚠️ Break-even erreur sur une position: {e}")
+            except Exception:
                 continue
+
 
     def open_position(self, signal, lot=None):
         symbol = self.resolve_symbol(signal['symbol'])
@@ -529,10 +532,17 @@ class MT5Trader:
    
 
     def update_open_trades(self):
+        # ⛔ MT5 pas connecté → on sort silencieusement
+        if not self.connected:
+            return
+
         # Applique break-even AVANT lecture
         self.apply_break_even()
 
         positions = self.mt5.get_positions()
+        if not positions:
+            return  # ✅ pas d'erreur, état normal
+
         trades = []
         for p in positions:
             trades.append({
@@ -549,6 +559,7 @@ class MT5Trader:
 
         with open(OPEN_TRADES_PATH, "w", encoding="utf-8") as f:
             json.dump(trades, f, indent=2, default=str)
+
 
 
     def start_open_trades_watcher(self, interval_sec=10):

@@ -11,6 +11,7 @@ class MT5Controller:
         self.login = int(self.config.get("mt5_login", 0)) or None
         self.password = self.config.get("mt5_password", "")
         self.server = self.config.get("mt5_server", "")
+        self._positions_warning_logged = False  # 👈 AJOUT
 
     def load_config(self):
         with open(CONFIG_PATH, "r") as f:
@@ -39,9 +40,12 @@ class MT5Controller:
     def get_positions(self):
         positions = mt5.positions_get()
         if positions is None:
-            logging.warning("MT5: Impossible de récupérer les positions ouvertes.")
+            if not self._positions_warning_logged:
+                logging.warning("MT5: Impossible de récupérer les positions ouvertes.")
+                self._positions_warning_logged = True
             return []
         return [p._asdict() for p in positions]
+
 
     def get_orders_history(self, days=7):
         from datetime import datetime, timedelta

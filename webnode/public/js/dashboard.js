@@ -290,15 +290,7 @@ function handleToggle(buttonId, endpoint, label) {
 document.addEventListener('DOMContentLoaded', () => {
     updateDashboard();
 
-    handleToggle(
-        'toggle-be',
-        '/toggle-break-even',
-        'Break-even'
-    );
+    handleToggle('toggle-be', '/toggle-break-even', 'Break-even');
+handleToggle('toggle-security', '/toggle-security', 'Sécurité');
 
-    handleToggle(
-        'toggle-security',
-        '/toggle-security',
-        'Sécurité'
-    );
 });

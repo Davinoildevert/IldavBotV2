@@ -10,7 +10,6 @@
   ],
   "telegram_session": "toto.session",
   "mode": "mt5_trading",
- 
   "tp_mode": "all_at_tp1",
   "show_stats_on_exit": true,
   "enabled": true,
@@ -42,23 +41,20 @@
   "signal_parser": {
     "symbol_pattern": "\\b(XAUUSD|GBPAUD|EURAUD|EURCAD|GBPCAD|GBPUSD|USDCHF|EURUSD|CHFJPY|USDCAD|GBPJPY|EURJPY|EURNZD|USDJPY|GOLD)\\b",
     "type_pattern": "\\b(BUY|SELL)\\b",
-    "tp_pattern": "(?i)\\b((tp|takeprofit)[\\s_\\^\\\u00b2\\-:]*[:=, -]*\\s*(-?\\d+[.,]?\\d*)|\\d{0,2}(tp|takeprofit)(-?\\d+[.,]?\\d*))",
+    "tp_pattern": "(?i)\\b((tp|takeprofit)[\\s_\\^\\²\\-:]*[:=, -]*\\s*(-?\\d+[.,]?\\d*)|\\d{0,2}(tp|takeprofit)(-?\\d+[.,]?\\d*))",
     "sl_pattern": "\\bSL\\s*[:=, \\s]+(-?\\d+[.,]?\\d*)"
   },
   "reset_requested": false,
-
-"break_even": {
-  "enabled": true,
-  "trigger": "tp1", 
-  "buffer_points": 5
-},
-
-"security": {
-  "enabled": true,
-  "block_opposite_direction": true,
-  "max_trades_per_symbol": 3,
-  "require_break_even_for_new_signal": true,
-  "cooldown_seconds": 300
-}
-
+  "break_even": {
+    "enabled": true,
+    "trigger": "tp1",
+    "buffer_points": 5
+  },
+  "security": {
+    "enabled": true,
+    "block_opposite_direction": true,
+    "max_trades_per_symbol": 3,
+    "require_break_even_for_new_signal": true,
+    "cooldown_seconds": 300
+  }
 }

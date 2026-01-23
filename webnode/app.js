@@ -12,6 +12,15 @@ const { exec } = require('child_process');
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
+const CONFIG_PATH = path.join(__dirname, '..', 'config', 'config.json');
+
+function loadConfig() {
+    return JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf-8'));
+}
+
+function saveConfig(config) {
+    fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2), 'utf-8');
+}
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -174,16 +183,34 @@ app.post('/reset', async (req, res) => {
     }
 });
 app.post('/toggle-break-even', (req, res) => {
-    config.break_even.enabled = req.body.enabled;
-    saveConfig();
-    res.json({ ok: true });
+    try {
+        const config = loadConfig();
+        config.break_even = config.break_even || {};
+        config.break_even.enabled = !!req.body.enabled;
+        saveConfig(config);
+
+        broadcastDashboardUpdate();
+        res.json({ ok: true });
+    } catch (e) {
+        res.status(500).json({ ok: false });
+    }
 });
 
+
 app.post('/toggle-security', (req, res) => {
-    config.security.enabled = req.body.enabled;
-    saveConfig();
-    res.json({ ok: true });
+    try {
+        const config = loadConfig();
+        config.security = config.security || {};
+        config.security.enabled = !!req.body.enabled;
+        saveConfig(config);
+
+        broadcastDashboardUpdate();
+        res.json({ ok: true });
+    } catch (e) {
+        res.status(500).json({ ok: false });
+    }
 });
+
 
 app.post('/close-trade', async (req, res) => {
     const ticket = req.body.ticket;
