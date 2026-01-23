@@ -173,6 +173,17 @@ app.post('/reset', async (req, res) => {
         res.redirect('/dashboard?error=Erreur%20API%20Python%20(reset)');
     }
 });
+app.post('/toggle-break-even', (req, res) => {
+    config.break_even.enabled = req.body.enabled;
+    saveConfig();
+    res.json({ ok: true });
+});
+
+app.post('/toggle-security', (req, res) => {
+    config.security.enabled = req.body.enabled;
+    saveConfig();
+    res.json({ ok: true });
+});
 
 app.post('/close-trade', async (req, res) => {
     const ticket = req.body.ticket;

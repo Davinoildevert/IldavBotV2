@@ -8,103 +8,14 @@
     <meta name="description" content="Dashboard de trading accessible et moderne pour ILdavBot.">
     <meta name="theme-color" content="#18191e">
     <link rel="stylesheet" href="/css/style.css">
-    <script src="/socket.io/socket.io.js"></script>
+    
     <script defer src="/js/dashboard.js"></script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const socket = io();
-        socket.on('dashboard_update', function(data) {
-            // Statut du bot
-            const statusIcon = document.getElementById('bot-status-icon');
-            const statusBtn = document.getElementById('bot-status-btn');
-            const statusText = document.getElementById('bot-status-text');
-            if (data.config.enabled) {
-                statusIcon.textContent = '⏸️';
-                statusBtn.form.action = '/pause';
-                statusText.innerHTML = '<span class="active-dot">● ACTIF</span>';
-            } else {
-                statusIcon.textContent = '▶️';
-                statusBtn.form.action = '/play';
-                statusText.innerHTML = '<span style="color:#ff6464;font-weight:700;">● PAUSE</span>';
-            }
-            // Trades ouverts
-            const tradesTable = document.getElementById('trades-table-body');
-            tradesTable.innerHTML = '';
-            if (data.open_trades.length) {
-                data.open_trades.forEach(trade => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${trade.symbol}</td>
-                        <td>${trade.type}</td>
-                        <td>${trade.lot}</td>
-                        <td>${trade.entry}</td>
-                        <td>${trade.sl}</td>
-                        <td>${trade.tp}</td>
-                        <td>${trade.profit}</td>
-                        <td>
-                            <form method="POST" action="/close-trade" style="display:inline;">
-                                <input type="hidden" name="ticket" value="${trade.ticket}">
-                                <button class="custom-btn red" type="submit">❌ Fermer</button>
-                            </form>
-                        </td>
-                    `;
-                    tradesTable.appendChild(row);
-                });
-            } else {
-                const row = document.createElement('tr');
-                row.innerHTML = `<td colspan="8" style="color:#bbb;">Aucune position ouverte pour le moment.</td>`;
-                tradesTable.appendChild(row);
-            }
-            // Derniers signaux
-            const signalsDiv = document.getElementById('signals-list');
-            signalsDiv.innerHTML = '';
-            if (data.last_signals && data.last_signals.length) {
-                data.last_signals.slice(-5).reverse().forEach(sig => {
-                    const div = document.createElement('div');
-                    div.style.marginBottom = '8px';
-                    div.innerHTML = `<b>${sig.symbol} ${sig.type}</b> | Entrée: ${sig.entry || '-'} | SL: ${sig.sl || '-'} | TP: ${(Array.isArray(sig.tp) ? sig.tp.join(', ') : (sig.tp || '-'))}<div style=\"font-size:0.95em;color:#aaa;\">Reçu le ${sig.time || '-'} </div>`;
-                    signalsDiv.appendChild(div);
-                });
-            } else {
-                signalsDiv.innerHTML = '<div style="color:#bbb;">Aucun signal récent détecté.</div>';
-            }
-        });
-        // Theme toggle logic
-        const btn = document.getElementById('theme-toggle');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        let theme = localStorage.getItem('theme') || (prefersDark ? 'dark' : 'light');
-        document.body.setAttribute('data-theme', theme);
-        btn.innerText = theme === 'dark' ? '🌙' : '☀️';
-        btn.onclick = function() {
-            theme = (theme === 'dark') ? 'light' : 'dark';
-            document.body.setAttribute('data-theme', theme);
-            localStorage.setItem('theme', theme);
-            btn.innerText = theme === 'dark' ? '🌙' : '☀️';
-        };
-        // Sidebar collapse/expand
-        const sidebar = document.querySelector('.sidebar');
-        const toggleBtn = document.getElementById('sidebar-toggle');
-        const toggleIcon = document.getElementById('sidebar-toggle-icon');
-        let collapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-        function setSidebarState(state) {
-            collapsed = state;
-            if (collapsed) {
-                sidebar.classList.add('collapsed');
-                toggleIcon.textContent = '⏵';
-            } else {
-                sidebar.classList.remove('collapsed');
-                toggleIcon.textContent = '⏴';
-            }
-            localStorage.setItem('sidebarCollapsed', collapsed);
-        }
-        setSidebarState(collapsed);
-        toggleBtn.onclick = function() {
-            setSidebarState(!collapsed);
-        };
-    });
-    </script>
+   
 </head>
+
+
 <body>
+    <div id="toast-container"></div>
 <div class="container-main">
     <!-- SIDEBAR -->
     <aside class="sidebar">
@@ -164,7 +75,85 @@
                     </button>
                 </form>
             </div>
+                <div class="custom-card" id="bot-global-status">
+                <div class="card-title">État global</div>
+                <div class="status-line" id="status-enabled">🤖 Bot : --</div>
+                <div class="status-line" id="status-security">🔐 Sécurité : --</div>
+                <div class="status-line" id="status-be">🎯 Break-even : --</div>
+                <div class="status-line" id="status-tp-mode">📊 TP mode : --</div>
+                <div class="status-line" id="status-cooldown">⏱ Cooldown : --</div>
+                
+
+            </div>
+            <div class="custom-card" id="risk-summary">
+                <div class="card-title">📊 Vision risque</div>
+
+                <div class="risk-line" id="risk-percent">⚠️ Risque engagé : --%</div>
+                <div class="risk-line" id="risk-sl">🔻 Perte max (SL) : --</div>
+                <div class="risk-line" id="risk-correlated">🔗 Trades corrélés : --</div>
+                <div class="risk-line" id="risk-secured">🟢 Profit sécurisé : --</div>
+</div>
         </div>
+        <div class="card-row">
+    <div class="custom-card" id="quick-controls">
+        <div class="card-title">🎛 Contrôles rapides</div>
+
+        <!-- Break-even toggle -->
+        <button class="quick-toggle" id="toggle-be"
+                data-state="<%= config.break_even?.enabled ? 'on' : 'off' %>">
+            🎯 Break-even :
+            <span class="toggle-state">
+                <%= config.break_even?.enabled ? 'ON' : 'OFF' %>
+            </span>
+        </button>
+
+        <!-- Sécurité toggle -->
+        <button class="quick-toggle" id="toggle-security"
+                data-state="<%= config.security?.enabled ? 'on' : 'off' %>">
+            🔐 Sécurité :
+            <span class="toggle-state">
+                <%= config.security?.enabled ? 'ON' : 'OFF' %>
+            </span>
+        </button>
+
+        <hr style="width:100%;border:0;border-top:1px solid #333;margin:18px 0;">
+
+        <!-- Blocage symbole (placeholder V1.5) -->
+        <button class="quick-toggle warning" id="block-symbol-btn" disabled
+                title="Bientôt disponible">
+            🚫 Bloquer un symbole
+        </button>
+
+        <!-- Blocage canal -->
+        <button class="quick-toggle warning" id="block-channel-btn" disabled
+                title="Bientôt disponible">
+            🔕 Bloquer un canal Telegram
+        </button>
+
+        <div style="font-size:0.9em;color:#888;margin-top:10px;">
+            Certaines actions seront activées dans la prochaine version.
+        </div>
+    </div>
+</div>
+
+        <h3>🔔 Derniers signaux reçus</h3>
+        <div id="signals-list">
+            <% if (last_signals && last_signals.length) { %>
+                <% last_signals.slice(-5).reverse().forEach(sig => { %>
+                    <div style="margin-bottom:8px;">
+                        <b><%= sig.symbol %> <%= sig.type %></b> |
+                        Entrée: <%= sig.entry || '-' %> |
+                        SL: <%= sig.sl || '-' %> |
+                        TP: <%= Array.isArray(sig.tp) ? sig.tp.join(', ') : (sig.tp || '-') %>
+                        <div style="font-size:0.95em;color:#aaa;">Reçu le <%= sig.time || '-' %></div>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <div style="color:#bbb;">Aucun signal récent détecté.</div>
+            <% } %>
+        </div>
+        <h3 style="margin-top:28px;">🧠 Décisions du bot</h3>
+        <div id="signal-feedback"></div>
         <h3 style="margin-top:32px;">📈 Trades ouverts</h3>
         <table>
             <thead>
@@ -204,22 +193,8 @@
             </tbody>
         </table>
         <hr style="margin:32px 0 18px 0; border:none; border-top:1px solid #333;">
-        <h3>🔔 Derniers signaux reçus</h3>
-        <div id="signals-list">
-            <% if (last_signals && last_signals.length) { %>
-                <% last_signals.slice(-5).reverse().forEach(sig => { %>
-                    <div style="margin-bottom:8px;">
-                        <b><%= sig.symbol %> <%= sig.type %></b> |
-                        Entrée: <%= sig.entry || '-' %> |
-                        SL: <%= sig.sl || '-' %> |
-                        TP: <%= Array.isArray(sig.tp) ? sig.tp.join(', ') : (sig.tp || '-') %>
-                        <div style="font-size:0.95em;color:#aaa;">Reçu le <%= sig.time || '-' %></div>
-                    </div>
-                <% }) %>
-            <% } else { %>
-                <div style="color:#bbb;">Aucun signal récent détecté.</div>
-            <% } %>
-        </div>
+        
+
         <!-- Bouton de réinitialisation des journaux -->
         <form method="POST" action="/reset-logs" onsubmit="return confirm('⚠️ Cette action va effacer tous les journaux (logs, trades, signaux) et remettre à zéro l\'historique. Continuer ?');" style="margin-bottom:0; margin-top:32px;">
             <button type="submit" class="custom-btn red" style="font-weight:bold;">🗑️ Effacer tous les journaux (logs, trades, signaux)</button>

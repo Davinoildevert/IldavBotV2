@@ -19,6 +19,7 @@ class MT5Trader:
         self.start_closed_trades_watcher()
         self.start_open_trades_watcher()
         self.latency_logger = get_latency_logger()
+        self.last_trade_time = {}
 
     def connect(self):
         self.connected = self.mt5.connect()
@@ -26,8 +27,208 @@ class MT5Trader:
 
     def disconnect(self):
         self.mt5.disconnect()
+    
+    def get_open_trades_by_symbol(self, symbol):
+        positions = self.mt5.get_positions()
+        return [p for p in positions if p['symbol'] == symbol]
+    
+    def has_secured_trade(self, symbol):
+        positions = self.get_open_trades_by_symbol(symbol)
+        for p in positions:
+            entry = p.get('price_open')
+            sl = p.get('sl')
+            if not sl or not entry:
+                continue
+
+            info = mt5.symbol_info(symbol)
+            if not info:
+                continue
+            buffer = info.point
+
+
+            if p['type'] == 0 and sl >= entry + buffer:
+                return True
+
+            if p['type'] == 1 and sl <= entry - buffer:
+                return True
+
+        return False
+
+    def can_open_trade(self, signal):
+       
+
+        security_cfg = self.config.get("security", {})
+        if not security_cfg.get("enabled", True):
+            return True, ""
+
+        symbol = self.resolve_symbol(signal['symbol'])
+        if not symbol:
+            return False, "Symbole introuvable"
+
+        now = datetime.datetime.now().timestamp()
+        cooldown = security_cfg.get("cooldown_seconds", 0)
+
+        last_time = self.last_trade_time.get(symbol)
+        if last_time and cooldown > 0:
+            if now - last_time < cooldown:
+                return False, f"Cooldown actif ({int(cooldown - (now - last_time))}s restantes)"
+        direction = signal['type'].upper()  # BUY / SELL
+        open_trades = self.get_open_trades_by_symbol(symbol)
+
+        # 1️⃣ Blocage direction opposée
+        if security_cfg.get("block_opposite_direction", True):
+            for p in open_trades:
+                if (p['type'] == 0 and direction == "SELL") or (p['type'] == 1 and direction == "BUY"):
+                    return False, "Trade opposé déjà ouvert sur ce symbole"
+
+        # 2️⃣ Limite de trades par symbole
+        max_trades = security_cfg.get("max_trades_per_symbol", 3)
+        if len(open_trades) >= max_trades:
+            return False, f"Limite de {max_trades} trades atteinte sur {symbol}"
+
+        # 3️⃣ Exiger un trade sécurisé avant nouveau signal
+        if security_cfg.get("require_break_even_for_new_signal", True):
+            if open_trades and not self.has_secured_trade(symbol):
+                return False, "Aucun trade sécurisé (break-even requis)"
+
+        return True, ""
+
+    
+    def get_tp1_from_open_trade(self, symbol, trade_type):
+        """
+        Essaie de retrouver un TP1 'global' pour le signal à partir des positions ouvertes.
+        - En mode progressive: TP1 = le TP le plus proche de l'entrée (par direction)
+        - En mode all_at_tp1: tous ont le même TP => ça marche aussi
+        """
+        positions = self.get_open_trades_by_symbol(symbol)
+        if not positions:
+            return None
+
+        # filtre par direction
+        if trade_type == 0:  # BUY
+            same_dir = [p for p in positions if p.get("type") == 0 and p.get("tp")]
+            if not same_dir:
+                return None
+            # TP1 BUY = le plus petit TP au-dessus de l'entrée (souvent le plus proche)
+            return min(float(p["tp"]) for p in same_dir if float(p["tp"]) > 0)
+
+        else:  # SELL
+            same_dir = [p for p in positions if p.get("type") == 1 and p.get("tp")]
+            if not same_dir:
+                return None
+            # TP1 SELL = le plus grand TP (car TP est plus bas, mais numériquement peut être inférieur)
+            # On prend celui le plus "proche" en prenant le max si les TP sont sous l'entrée.
+            return max(float(p["tp"]) for p in same_dir if float(p["tp"]) > 0)
+
+    def modify_sl(self, ticket, symbol, new_sl, tp=None):
+        """
+        Modifie SL (et garde TP si fourni). Utilise action SLTP.
+        """
+        req = {
+            "action": mt5.TRADE_ACTION_SLTP,
+            "position": int(ticket),
+            "symbol": symbol,
+            "sl": float(new_sl),
+        }
+        if tp is not None:
+            req["tp"] = float(tp)
+
+        res = mt5.order_send(req)
+        return res
+
+    def apply_break_even(self):
+        """
+        Passe SL à break-even (+ buffer) pour toutes les positions qui ont atteint TP1.
+        Ne change PAS ton système N TP = N trades.
+        """
+        be_cfg = self.config.get("break_even", {})
+        if not be_cfg.get("enabled", False):
+            return
+
+        buffer_points = float(be_cfg.get("buffer_points", 0))
+        use_tp1_as_trigger = bool(be_cfg.get("use_tp1_as_trigger", True))
+
+        positions = self.mt5.get_positions()
+        if not positions:
+            return
+
+        for p in positions:
+            try:
+                ticket = p.get("ticket")
+                symbol = p.get("symbol")
+                trade_type = p.get("type")  # 0 BUY / 1 SELL
+                entry = p.get("price_open")
+                sl = p.get("sl")
+                tp = p.get("tp")
+
+                if not ticket or not symbol or entry is None:
+                    continue
+
+                info = mt5.symbol_info(symbol)
+                tick = mt5.symbol_info_tick(symbol)
+                if not info or not tick:
+                    continue
+
+                point = info.point
+                price_now = tick.bid if trade_type == 0 else tick.ask
+
+                # Déjà sécurisé ? (SL au-dessus/à entry pour BUY, ou en dessous/à entry pour SELL)
+                if sl and entry:
+                    if trade_type == 0 and float(sl) >= float(entry):
+                        continue
+                    if trade_type == 1 and float(sl) <= float(entry):
+                        continue
+
+                # Trigger = TP1 atteint
+                if use_tp1_as_trigger:
+                    tp1 = self.get_tp1_from_open_trade(symbol, trade_type)
+                    if not tp1:
+                        continue
+
+                    if trade_type == 0:  # BUY -> prix doit >= tp1
+                        if price_now < tp1:
+                            continue
+                        new_sl = float(entry) + buffer_points * point
+                    else:  # SELL -> prix doit <= tp1
+                        if price_now > tp1:
+                            continue
+                        new_sl = float(entry) - buffer_points * point
+                else:
+                    # si tu veux plus tard RR trigger, on l'ajoutera ici
+                    continue
+                
+                # évite de spam SLTP si déjà au bon niveau
+                if trade_type == 0 and float(sl) >= float(entry) + buffer_points * point:
+                    continue
+                if trade_type == 1 and float(sl) <= float(entry) - buffer_points * point:
+                    continue
+
+
+                # Envoi modification SL
+                res = self.modify_sl(ticket, symbol, new_sl, tp=tp)
+                if res is None:
+                    print(f"⚠️ Break-even: aucune réponse MT5 pour ticket={ticket}")
+                    continue
+
+                if res.retcode == mt5.TRADE_RETCODE_DONE:
+                    print(f"🟢 Break-even appliqué: ticket={ticket} | {symbol} | new_sl={new_sl}")
+                else:
+                    print(f"⚠️ Break-even refusé: ticket={ticket} | retcode={res.retcode} | {res.comment}")
+
+            except Exception as e:
+                print(f"⚠️ Break-even erreur sur une position: {e}")
+                continue
 
     def open_position(self, signal, lot=None):
+        symbol = self.resolve_symbol(signal['symbol'])
+        signal = dict(signal)
+        signal['symbol'] = symbol
+
+        allowed, reason = self.can_open_trade(signal)
+        if not allowed:
+            print(f"⛔ Trade bloqué par sécurité : {reason}")
+            return {"error": reason}
+
         risk_cfg = self.config.get("risk", {})
         tp_mode = self.config.get("tp_mode", "progressive")
         lot = lot if lot is not None else risk_cfg.get("default_lot", 0.01)
@@ -46,19 +247,53 @@ class MT5Trader:
                 results.append(order)
             print(f"=> {len(results)} trades ouverts sur MT5 (1 par TP, mode 'progressive')")
 
-        return results
+        opened = [r for r in results if isinstance(r, dict) and r.get("ticket")]
+        if opened:
+            self.last_trade_time[symbol] = datetime.datetime.now().timestamp()
 
+        return results
+        
+
+    def resolve_symbol(self, base_symbol):
+        symbols = mt5.symbols_get()
+        if not symbols:
+            return None
+
+        candidates = []
+        for s in symbols:
+            if base_symbol.upper() in s.name.upper():
+                if s.visible or mt5.symbol_select(s.name, True):
+                    candidates.append(s.name)
+
+        if not candidates:
+            return None
+
+        # priorité au nom exact
+        for c in candidates:
+            if c.upper() == base_symbol.upper():
+                return c
+
+        return candidates[0]
 
     def place_order(self, signal, tp, lot):
         import time
         t_start = time.time()
         symbol = signal['symbol']
-        symbol_map = {"GOLD": "XAUUSD"}
-        symbol = symbol_map.get(symbol, symbol)
+
+        if not symbol:
+            return {"error": f"Symbole {signal['symbol']} introuvable chez le broker"}
+
+       
+
         trade_type = signal['type']
         sl = float(signal['sl']) if signal.get('sl') else None
         tp_val = float(tp) if tp else None
 
+        if not mt5.symbol_select(symbol, True):
+            t_select = time.time()
+            self.latency_logger.info(f"MT5 | Sélection symbole échouée | {symbol} | t_select={t_select} | delta={t_select-t_start:.3f}s")
+            print(f"❌ Impossible de sélectionner le symbole {symbol}")
+            return {"error": f"Symbol {symbol} not found or not enabled"}
         tick = mt5.symbol_info_tick(symbol)
         t_tick = time.time()
         self.latency_logger.info(f"MT5 | Récupération tick | {symbol} | t_tick={t_tick} | delta={t_tick-t_start:.3f}s")
@@ -73,11 +308,7 @@ class MT5Trader:
         t_price = time.time()
         self.latency_logger.info(f"MT5 | Détermination prix entrée | {symbol} | t_price={t_price} | delta={t_price-t_tick:.3f}s")
 
-        if not mt5.symbol_select(symbol, True):
-            t_select = time.time()
-            self.latency_logger.info(f"MT5 | Sélection symbole échouée | {symbol} | t_select={t_select} | delta={t_select-t_price:.3f}s")
-            print(f"❌ Impossible de sélectionner le symbole {symbol}")
-            return {"error": f"Symbol {symbol} not found or not enabled"}
+        
 
         if not self.connected:
             if not self.connect():
@@ -88,14 +319,35 @@ class MT5Trader:
 
         order_type = mt5.ORDER_TYPE_BUY if trade_type == "BUY" else mt5.ORDER_TYPE_SELL
         info = mt5.symbol_info(symbol)
-        if info:
+        if not info:
+            return {"error": f"Impossible de récupérer les infos broker pour {symbol}"}
+
+        min_lot = info.volume_min
+        max_lot = info.volume_max
+        step = info.volume_step
+
+        lot = max(min_lot, min(lot, max_lot))
+        lot = round(lot / step) * step
+        lot = round(lot, 2)
+
+        
+        if info.trade_stops_level > 0:
             min_stop = info.trade_stops_level * info.point
-            if sl and abs(price - sl) < min_stop:
-                print(f"⛔ Le SL ({sl}) est trop proche du prix d'entrée ({price}) ! Minimum requis : {min_stop:.5f}")
-                return {"error": f"SL trop proche du prix (min: {min_stop:.5f})"}
-            if tp_val and abs(price - tp_val) < min_stop:
-                print(f"⛔ Le TP ({tp_val}) est trop proche du prix d'entrée ({price}) ! Minimum requis : {min_stop:.5f}")
-                return {"error": f"TP trop proche du prix (min: {min_stop:.5f})"}
+        else:
+            # fallback sécurité
+            min_stop = 1.0 if "XAU" in symbol else 10 * info.point
+
+        if sl and abs(price - sl) < min_stop:
+            print(f"⛔ Le SL ({sl}) est trop proche du prix d'entrée ({price}) ! Minimum requis : {min_stop:.5f}")
+            return {"error": f"SL trop proche du prix (min: {min_stop:.5f})"}
+        if tp_val and abs(price - tp_val) < min_stop:
+            print(f"⛔ Le TP ({tp_val}) est trop proche du prix d'entrée ({price}) ! Minimum requis : {min_stop:.5f}")
+            return {"error": f"TP trop proche du prix (min: {min_stop:.5f})"}
+
+        if "XAU" in symbol or "GOLD" in symbol:
+            deviation = 100
+        else:
+            deviation = 30
 
         request = {
             "action": mt5.TRADE_ACTION_DEAL,
@@ -105,29 +357,71 @@ class MT5Trader:
             "price": price,
             "sl": sl,
             "tp": tp_val,
-            "deviation": 30,
+            "deviation": deviation,
             "magic": 123456,
             "comment": "TelegramAuto",
             "type_time": mt5.ORDER_TIME_GTC,
-            "type_filling": mt5.ORDER_FILLING_RETURN,
+            "type_filling": getattr(info, "filling_mode", mt5.ORDER_FILLING_RETURN),
+
         }
 
-        t_send = time.time()
-        self.latency_logger.info(f"MT5 | Envoi ordre | {symbol} | t_send={t_send} | delta={t_send-t_price:.3f}s | Request: {request}")
-        result = mt5.order_send(request)
-        t_result = time.time()
-        self.latency_logger.info(f"MT5 | Réponse reçue | {symbol} | t_result={t_result} | delta={t_result-t_send:.3f}s | Résultat: {result}")
+        # === RETRY INTELLIGENT MT5 (FIN DU POINT 1) ===
 
+        fillings_to_try = [
+            getattr(info, "filling_mode", mt5.ORDER_FILLING_RETURN),
+            mt5.ORDER_FILLING_IOC,
+            mt5.ORDER_FILLING_FOK,
+        ]
+        fillings_to_try = list(dict.fromkeys(fillings_to_try))
+
+        deviations_to_try = [deviation, deviation + 20]
+
+        result = None
+
+        for fill in fillings_to_try:
+            for dev in deviations_to_try:
+                request["type_filling"] = fill
+                request["deviation"] = dev
+
+                t_send = time.time()
+                self.latency_logger.info(
+                    f"MT5 | Tentative ordre | {symbol} | filling={fill} | deviation={dev}"
+                )
+
+                result = mt5.order_send(request)
+
+                t_result = time.time()
+                self.latency_logger.info(
+                    f"MT5 | Résultat tentative | {symbol} | delta={t_result-t_send:.3f}s | result={result}"
+                )
+
+                if result is None:
+                    continue
+
+                if result.retcode == mt5.TRADE_RETCODE_DONE:
+                    print(
+                        f"✅ [MT5] ORDRE OUVERT : ticket={result.order} | {symbol} {trade_type} "
+                        f"{price} TP:{tp_val} SL:{sl} Lot:{lot} | filling={fill} deviation={dev}"
+                    )
+                    return {
+                        "ticket": result.order,
+                        "symbol": symbol,
+                        "tp": tp_val,
+                        "sl": sl,
+                    }
+
+        # === TOUTES LES TENTATIVES ONT ÉCHOUÉ ===
         if result is None:
-            print("⛔ ERREUR: mt5.order_send a retourné None (demande refusée par MT5).")
-            return {"error": "order_send retourne None. Vérifie le symbole, volume, type_filling, et la disponibilité du marché."}
+            return {
+                "error": "order_send retourne None après plusieurs tentatives (marché indisponible ou refus broker)"
+            }
 
-        if result.retcode != mt5.TRADE_RETCODE_DONE:
-            print(f"❌ Echec d'ouverture {trade_type} sur {symbol} : code {result.retcode} | {result.comment}")
-            return {"error": f"Order failed: {result.comment}"}
+        return {
+            "error": f"Echec MT5 après retries | retcode={result.retcode} | comment={result.comment}"
+        }
 
-        print(f"✅ [MT5] ORDRE OUVERT : ticket={result.order} | {symbol} {trade_type} {price} TP:{tp_val} SL:{sl} Lot:{lot}")
-        return {"ticket": result.order, "symbol": symbol, "tp": tp_val, "sl": sl}
+
+        
 
     # Les fonctions ci-dessous tu peux les laisser telles quelles, ou aussi alléger leur print si tu veux
    
@@ -235,8 +529,10 @@ class MT5Trader:
    
 
     def update_open_trades(self):
+        # Applique break-even AVANT lecture
+        self.apply_break_even()
+
         positions = self.mt5.get_positions()
-        # On simplifie la structure pour le web
         trades = []
         for p in positions:
             trades.append({
@@ -250,8 +546,10 @@ class MT5Trader:
                 "open_time": p.get('time_open', ''),
                 "profit": p.get('profit', 0)
             })
+
         with open(OPEN_TRADES_PATH, "w", encoding="utf-8") as f:
             json.dump(trades, f, indent=2, default=str)
+
 
     def start_open_trades_watcher(self, interval_sec=10):
         def run():
@@ -290,6 +588,12 @@ class MT5Trader:
 
         price = tick.bid if trade_type == 0 else tick.ask
         order_type = mt5.ORDER_TYPE_SELL if trade_type == 0 else mt5.ORDER_TYPE_BUY
+        info = mt5.symbol_info(symbol)
+        if not info:
+            filling_mode = mt5.ORDER_FILLING_RETURN
+        else:
+            filling_mode = info.filling_mode
+       
 
         request = {
             "action": mt5.TRADE_ACTION_DEAL,
@@ -302,7 +606,7 @@ class MT5Trader:
             "magic": 123456,
             "comment": "WebClose",
             "type_time": mt5.ORDER_TIME_GTC,
-            "type_filling": mt5.ORDER_FILLING_RETURN,
+            "type_filling": filling_mode,
         }
 
         print("Fermeture request:", request)
