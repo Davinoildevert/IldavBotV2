@@ -1,0 +1,41 @@
+{
+  "mt5_login": "",
+  "mt5_password": "",
+  "mt5_server": "MetaQuotes-Demo",
+  "telegram_api_id": "",
+  "telegram_api_hash": "",
+  "telegram_channel": [],
+  "telegram_session": "session_local",
+  "mode": "paper",
+  "tp_mode": "all_at_tp1",
+  "show_stats_on_exit": true,
+  "enabled": true,
+  "risk": {
+    "max_lot": 0.1,
+    "max_daily_loss": 50,
+    "max_open_trades": 10,
+    "allowed_symbols": ["XAUUSD", "EURUSD", "GBPUSD"],
+    "stop_loss_required": true,
+    "default_lot": 0.01,
+    "break_even_on_tp": true
+  },
+  "signal_parser": {
+    "symbol_pattern": "\\b(XAUUSD|EURUSD|GBPUSD)\\b",
+    "type_pattern": "\\b(BUY|SELL)\\b",
+    "tp_pattern": "(?i)\\b((tp|takeprofit)[\\s_\\^\\²\\-:]*[:=, -]*\\s*(-?\\d+[.,]?\\d*)|\\d{0,2}(tp|takeprofit)(-?\\d+[.,]?\\d*))",
+    "sl_pattern": "\\bSL\\s*[:=, \\s]+(-?\\d+[.,]?\\d*)"
+  },
+  "reset_requested": false,
+  "break_even": {
+    "enabled": true,
+    "trigger": "tp1",
+    "buffer_points": 5
+  },
+  "security": {
+    "enabled": true,
+    "block_opposite_direction": true,
+    "max_trades_per_symbol": 3,
+    "require_break_even_for_new_signal": true,
+    "cooldown_seconds": 300
+  }
+}
