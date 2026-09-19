@@ -1,268 +1,135 @@
-# 📈 MT5 Trading Assistant
+# IldavBotV2 — Trading Automation & Monitoring Platform
 
-Un assistant de trading automatisé qui **reçoit des signaux Telegram** et exécute automatiquement des ordres sur **MetaTrader 5 (MT5)** — ou simule les trades en mode **paper trading**.
+Projet personnel de développement logiciel autour de l’automatisation de signaux Telegram vers MetaTrader 5, avec une couche d’API Python et un dashboard web de supervision.
 
-Le projet inclut désormais un **dashboard web moderne et temps réel**, permettant de piloter le bot et d’analyser son comportement sans modifier la logique de trading.
+L’objectif du projet est de construire une architecture modulaire capable de **recevoir un signal, le valider, déclencher une action de trading ou une simulation, puis exposer l’état du système à une interface web**.
 
----
+## Stack technique
 
-## 🚀 Dashboard Web Moderne (Node.js / Express)
+- **Python** — logique métier, écoute Telegram, gestion des trades
+- **Flask** — API locale de contrôle
+- **Node.js / Express** — dashboard web
+- **Socket.IO** — mises à jour temps réel côté interface
+- **EJS / JavaScript / CSS** — interface du dashboard
+- **MetaTrader 5** — exécution des ordres
+- **Telegram** — source des signaux
+- **JSON / dotenv** — configuration locale et variables sensibles
 
-Depuis 2025, le projet embarque un **dashboard web complet**, responsive et temps réel, développé en **Node.js / Express**, servant d’interface de contrôle et de visualisation du bot Python.
+## Fonctionnement
 
-Le bot **reste maître de la logique métier** :  
-le dashboard **observe, affiche et pilote**, mais **ne décide pas**.
+1. Le listener Telegram reçoit un signal.
+2. Le signal est parsé et contrôlé avant traitement.
+3. Le bot utilise soit :
+   - le mode **MT5**, pour interagir avec MetaTrader 5 ;
+   - le mode **paper trading**, pour simuler l’exécution.
+4. L’état du bot et certaines actions sont exposés via une **API Flask locale**.
+5. Le dashboard Node.js consomme cette API pour afficher l’activité et piloter le bot.
 
----
+## Architecture
 
-## ✨ Fonctionnalités du Dashboard
-
-### 📊 Dashboard général
-- Statut du bot (ACTIF / PAUSE)
-- Actions rapides : Play / Pause / Reset
-- État global :
-  - Sécurité
-  - Break-even
-  - Mode TP
-  - Cooldown
-- Derniers signaux Telegram reçus
-- Liste des trades ouverts en temps réel
-
----
-
-### 🧠 Décisions du bot (NOUVEAU)
-Section dédiée expliquant **pourquoi un trade a (ou n’a pas) été exécuté** :
-
-États possibles :
-- ✅ Trade exécuté
-- ⚠️ Signal ignoré (cooldown actif)
-- ⛔ Trade bloqué (règles de sécurité)
-- ❌ Trade rejeté (broker / lot / filling)
-
-Objectif :  
-👉 **ne plus jamais se demander “ça marche ou pas ?”**
-
----
-
-### 📈 Trades ouverts
-- Liste dynamique des positions
-- Badge visuel par trade :
-  - 🟢 BE actif
-  - 🔵 TP partiel atteint
-  - 🟡 En attente TP1
-  - 🔴 SL non protégé
-- Fermeture manuelle d’un trade
-
----
-
-### 🎛️ Contrôles rapides (V1.5)
-Ajout d’un panneau **Contrôles rapides** directement sur le dashboard :
-
-- Activer / désactiver le **Break-even**
-- Activer / désactiver la **Sécurité globale**
-- Protection anti double-clic
-- Feedback visuel immédiat (toasts)
-
-> Ces contrôles agissent **en temps réel** sur la configuration active du bot via l’API Python.
-
----
-
-### 📊 Vision Risque (NOUVEAU)
-Bloc de **vision risque simplifiée**, mis à jour automatiquement :
-
-- ⚠️ Risque total engagé (%)
-- 🔻 Perte maximale théorique (SL cumulés)
-- 🔗 Nombre de trades corrélés (placeholder V1.5)
-- 🟢 Profit déjà sécurisé (BE / TP)
-
-Règles UX intégrées :
-- Aucun trade → affichage clair à 0
-- Alerte visuelle si le risque dépasse un seuil
-- Lecture instantanée de l’exposition globale
-
-⚠️ **Aucun calcul de risque n’est imposé au bot**  
-Les valeurs sont **exposées / agrégées côté dashboard**.
-
----
-
-## 🧩 Architecture Générale
-
-mt5_trading_assistant/
-│
-├── main.py # Bot principal (logique métier)
-├── api_server.py # API Flask locale (contrôle & status)
-│
-├── webnode/ # Dashboard Web Node.js / Express
-│ ├── app.js
-│ ├── views/ # Templates EJS
-│ │ ├── dashboard.ejs
-│ │ ├── trades.ejs
-│ │ ├── journal.ejs
-│ │ ├── logs.ejs
-│ │ └── parametre.ejs
-│ ├── public/
-│ │ ├── js/dashboard.js
-│ │ ├── css/style.css
-│ │ └── images/
-│ └── ...
-│
-├── config/
+```text
+IldavBotV2/
+├── main.py                 # boucle principale et redémarrage contrôlé
+├── api_server.py           # API Flask
+├── telegram/               # réception des signaux
 ├── trading/
+│   ├── mt5_trader.py       # interactions MT5
+│   └── paper_trader.py     # simulation
 ├── mt5/
-├── telegram/
-├── logs/
-└── ...
+├── utils/
+├── config/
+└── webnode/
+    ├── app.js              # serveur Express / Socket.IO
+    ├── views/              # templates EJS
+    └── public/             # JS, CSS, assets
+```
 
----
+## Fonctions principales
 
-## 🔌 Liaison Node.js ↔ Python
+### Automatisation
+- réception de signaux Telegram ;
+- parsing et validation des informations utiles ;
+- exécution MT5 ou simulation en paper trading ;
+- suivi des positions et journalisation.
 
-- Une **API Flask locale** (`api_server.py`) expose :
-  - Pause / Play
-  - Reset
-  - Close trade
-  - Toggle Break-even
-  - Toggle Sécurité
-  - Statut global
-- Le dashboard Node.js **consomme uniquement cette API**
-- Le bot Python reste **totalement indépendant du front**
+### API de contrôle
+L’API Flask permet notamment de :
+- mettre le bot en pause ;
+- relancer son activité ;
+- demander un reset ;
+- fermer une position ;
+- récupérer l’état courant.
 
-📌 L’API est accessible uniquement en local :
+Les routes sensibles sont protégées par une **clé API** transmise dans les headers.
 
----
+### Dashboard
+Le dashboard permet de :
+- suivre l’état du bot ;
+- consulter les derniers signaux ;
+- visualiser les positions ouvertes ;
+- piloter certaines actions sans modifier directement la logique Python ;
+- afficher des informations de risque et de statut.
 
-## 🔌 Liaison Node.js ↔ Python
+## Robustesse
 
-- Une **API Flask locale** (`api_server.py`) expose :
-  - Pause / Play
-  - Reset
-  - Close trade
-  - Toggle Break-even
-  - Toggle Sécurité
-  - Statut global
-- Le dashboard Node.js **consomme uniquement cette API**
-- Le bot Python reste **totalement indépendant du front**
+Le projet inclut plusieurs mécanismes destinés à améliorer la fiabilité :
+- gestion d’exceptions dans la boucle principale ;
+- redémarrage contrôlé du processus après une demande de reset ;
+- configuration séparée du code ;
+- API locale ;
+- authentification par clé API ;
+- mode paper trading pour tester sans exécution réelle.
 
-📌 L’API est accessible uniquement en local :
-127.0.0.1:5005
+## Lancement
 
----
+### 1. Installer les dépendances Python
+Créer un environnement virtuel puis installer les dépendances nécessaires au projet.
 
-## ▶️ Lancement du Projet
+### 2. Configurer les variables d’environnement
+Créer un fichier `.env` contenant notamment la clé utilisée pour sécuriser l’API.
 
-### 1️⃣ Lancer le bot
+Configurer également les paramètres Telegram et MT5 dans le dossier `config/`.
+
+### 3. Lancer le bot
 ```bash
 python main.py
-2️⃣ Lancer l’API Python
+```
+
+### 4. Lancer l’API
+```bash
 python api_server.py
-3️⃣ Lancer le dashboard web
+```
+
+Par défaut, l’API est utilisée localement sur le port `5005`.
+
+### 5. Lancer le dashboard
+```bash
 cd webnode
 npm install
-npx nodemon app.js
+npm start
+```
 
-4️⃣ Accès navigateur
-http://localhost:3000
+Le dashboard est ensuite accessible sur `http://localhost:3000`.
 
-⚙️ Configuration
+## Ce que ce projet m’a permis de travailler
 
-Éditer le fichier :
+- intégration de plusieurs services dans une même application ;
+- communication entre Python et Node.js via API REST ;
+- séparation entre logique métier et interface ;
+- gestion d’erreurs et redémarrage contrôlé ;
+- développement d’un dashboard de supervision ;
+- automatisation d’un workflow temps réel.
 
-config/config.json
-Pour définir :
+## Roadmap
 
-Compte MT5 (login / serveur)
+- tests automatisés plus complets ;
+- amélioration du calcul de risque ;
+- gestion avancée du trailing stop ;
+- meilleure observabilité ;
+- déploiement conteneurisé.
 
-Clés Telegram
+## Auteur
 
-Canal surveillé
-
-Mode paper ou mt5_trading
-
-Paramètres de risque :
-
-Lot par défaut
-
-Max trades
-
-Sécurité
-
-Symboles autorisés
-
-🛡️ Sécurité & Robustesse
-
-API Python accessible uniquement en local
-
-Protection anti double-clic sur actions critiques
-
-Vérifications DOM côté front
-
-Fallback UI en cas d’erreur API
-
-Aucune exposition réseau inutile
-
-📱 Responsive & Accessibilité
-
-Compatible mobile / tablette / desktop
-
-Sidebar rétractable
-
-Navigation clavier
-
-Toasts clairs et non intrusifs
-
-Contrastes lisibles
-
-📌 Compatibilité
-
-✅ Trading réel MT5
-
-✅ Paper trading
-
-✅ Anciennes configurations
-
-❌ Aucune dépendance Python ajoutée
-
-🛣️ Roadmap
-Implémenté (V1.5)
-
-Dashboard temps réel robuste
-
-Décisions explicites du bot
-
-Contrôles rapides BE / Sécurité
-
-Vision risque simplifiée
-
-UX claire et fiable
-
-À venir (V2)
-
-Corrélation réelle entre symboles
-
-Calcul de risque exact par trade
-
-Trailing stop
-
-Auto lot sizing
-
-Timeline visuelle des trades
-
-👤 Auteur
-
-ILdavBot
-📧 Contact : davinoildevert10@gmail.com
-
-📄 Licence
-
-MG
-
-
----
-
-Si tu veux, prochain step possible :
-- `CHANGELOG.md` propre  
-- Schéma API (`api.md`)  
-- Checklist V2  
-- Nettoyage final du JS (version “clean prod”)
-
-Dis-moi.
+**Davino Ildevert ANDRIANARIVONY**  
+Élève ingénieur — Développement logiciel  
+Python • API • Full Stack • Automatisation
