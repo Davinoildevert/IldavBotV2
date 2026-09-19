@@ -1,21 +1,26 @@
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+
+# Environment / secrets
 .env
-#config/config.json
-#logs/
-#trading.log
+webnode/.env
+config/config.json
+*.session
+
+# Runtime data
+logs/
+*.log
+
 # Node.js
 node_modules/
 webnode/node_modules/
-# VSCode et OS
+
+# IDE / OS
 .vscode/
 .DS_Store
 Thumbs.db
-# Autres fichiers sensibles
-*.session
-*.pyo
-*.pyd
-#*.csv
-#*.log
-#*.json
+
 env/
+.venv/
