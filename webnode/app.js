@@ -9,6 +9,14 @@ const axios = require('axios');
 const session = require('express-session');
 const { exec } = require('child_process');
 
+const SESSION_SECRET = process.env.SESSION_SECRET;
+const DASHBOARD_PASSWORD = DASHBOARD_PASSWORD;
+const API_SECRET_KEY = API_SECRET_KEY;
+
+if (!SESSION_SECRET || !DASHBOARD_PASSWORD || !API_SECRET_KEY) {
+    throw new Error('SESSION_SECRET, DASHBOARD_PASSWORD et API_SECRET_KEY doivent être définis dans webnode/.env');
+}
+
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
@@ -25,7 +33,7 @@ function saveConfig(config) {
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'ildevbot_secret',
+    secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: { 
@@ -65,7 +73,7 @@ app.get('/login', (req, res) => {
 
 app.post('/login', (req, res) => {
     const password = req.body.password;
-    if (password === process.env.DASHBOARD_PASSWORD) {
+    if (password === DASHBOARD_PASSWORD) {
         req.session.authenticated = true;
         res.redirect('/dashboard');
     } else {
@@ -150,7 +158,7 @@ app.get('/guide', (req, res) => {
 app.post('/pause', async (req, res) => {
     try {
         await axios.post('http://127.0.0.1:5005/pause', {}, {
-            headers: { 'x-api-key': process.env.API_SECRET_KEY }
+            headers: { 'x-api-key': API_SECRET_KEY }
         });
         broadcastDashboardUpdate();
         res.redirect('/dashboard?message=Bot%20en%20pause');
@@ -162,7 +170,7 @@ app.post('/pause', async (req, res) => {
 app.post('/play', async (req, res) => {
     try {
         await axios.post('http://127.0.0.1:5005/play', {}, {
-            headers: { 'x-api-key': process.env.API_SECRET_KEY }
+            headers: { 'x-api-key': API_SECRET_KEY }
         });
         broadcastDashboardUpdate();
         res.redirect('/dashboard?message=Bot%20activ%C3%A9');
@@ -174,7 +182,7 @@ app.post('/play', async (req, res) => {
 app.post('/reset', async (req, res) => {
     try {
         await axios.post('http://127.0.0.1:5005/reset', {}, {
-            headers: { 'x-api-key': process.env.API_SECRET_KEY }
+            headers: { 'x-api-key': API_SECRET_KEY }
         });
         broadcastDashboardUpdate();
         res.redirect('/dashboard?message=Red%C3%A9marrage%20demand%C3%A9');
@@ -216,7 +224,7 @@ app.post('/close-trade', async (req, res) => {
     const ticket = req.body.ticket;
     try {
         await axios.post('http://127.0.0.1:5005/close-trade', { ticket }, {
-            headers: { 'x-api-key': process.env.API_SECRET_KEY }
+            headers: { 'x-api-key': API_SECRET_KEY }
         });
         broadcastDashboardUpdate();
         const referer = req.headers.referer || '';
