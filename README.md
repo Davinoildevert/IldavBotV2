@@ -1,171 +1,149 @@
 # IldavBotV2 — Trading Automation & Monitoring Platform
 
-Projet personnel de développement logiciel autour de l’automatisation de signaux Telegram vers MetaTrader 5, avec une couche d’API Python et un dashboard web de supervision.
+Système personnel d’automatisation conçu pour **recevoir des signaux Telegram, les analyser, les valider et piloter une exécution MetaTrader 5 ou une simulation en paper trading**, avec une API Python et un dashboard web de supervision.
 
-L’objectif du projet est de construire une architecture modulaire capable de **recevoir un signal, le valider, déclencher une action de trading ou une simulation, puis exposer l’état du système à une interface web**.
+## En bref — contribution & valeur
+
+- **Conçu** une architecture multi-service séparant réception Telegram, logique métier, exécution MT5 et interface de supervision.
+- **Automatisé** le parsing et la validation des signaux avant traitement afin d’éviter une exécution directe de données brutes.
+- **Exposé** les principales actions du bot via une API Flask protégée par clé API.
+- **Développé** un dashboard Node.js / Express / Socket.IO permettant de suivre et piloter le système en temps réel.
+- **Ajouté** un mode paper trading et une gestion d’erreurs/redémarrage pour tester et superviser le système plus sûrement.
 
 ## Stack technique
 
-- **Python** — logique métier, écoute Telegram, gestion des trades
+- **Python** — logique métier, listener Telegram, trading
 - **Flask** — API locale de contrôle
 - **Node.js / Express** — dashboard web
-- **Socket.IO** — mises à jour temps réel côté interface
-- **EJS / JavaScript / CSS** — interface du dashboard
-- **MetaTrader 5** — exécution des ordres
-- **Telegram** — source des signaux
-- **JSON / dotenv** — configuration locale et variables sensibles
+- **Socket.IO** — communication temps réel
+- **EJS / JavaScript / CSS** — interface
+- **MetaTrader 5** — exécution
+- **Telegram** — réception des signaux
+- **dotenv / JSON** — configuration locale
 
-## Fonctionnement
+## Flux de traitement
 
-1. Le listener Telegram reçoit un signal.
-2. Le signal est parsé et contrôlé avant traitement.
-3. Le bot utilise soit :
-   - le mode **MT5**, pour interagir avec MetaTrader 5 ;
-   - le mode **paper trading**, pour simuler l’exécution.
-4. L’état du bot et certaines actions sont exposés via une **API Flask locale**.
-5. Le dashboard Node.js consomme cette API pour afficher l’activité et piloter le bot.
+1. Réception du signal depuis Telegram.
+2. Parsing et extraction des informations utiles.
+3. Validation avant exécution.
+4. Traitement en mode :
+   - **MT5** ;
+   - ou **paper trading**.
+5. Publication de l’état via l’API Flask.
+6. Supervision et contrôle via le dashboard Node.js.
 
 ## Architecture
 
 ```text
 IldavBotV2/
-├── main.py                 # boucle principale et redémarrage contrôlé
-├── api_server.py           # API Flask
-├── telegram/               # réception des signaux
+├── main.py
+├── api_server.py
+├── telegram/
 ├── trading/
-│   ├── mt5_trader.py       # interactions MT5
-│   └── paper_trader.py     # simulation
+│   ├── mt5_trader.py
+│   └── paper_trader.py
 ├── mt5/
 ├── utils/
 ├── config/
 └── webnode/
-    ├── app.js              # serveur Express / Socket.IO
-    ├── views/              # templates EJS
-    └── public/             # JS, CSS, assets
+    ├── app.js
+    ├── views/
+    └── public/
 ```
 
 ## Fonctions principales
 
 ### Automatisation
 - réception de signaux Telegram ;
-- parsing et validation des informations utiles ;
-- exécution MT5 ou simulation en paper trading ;
-- suivi des positions et journalisation.
+- parsing et validation ;
+- exécution MT5 ou simulation ;
+- suivi des positions ;
+- journalisation.
 
-### API de contrôle
-L’API Flask permet notamment de :
-- mettre le bot en pause ;
-- relancer son activité ;
-- demander un reset ;
-- fermer une position ;
-- récupérer l’état courant.
+### API Flask
+Permet notamment :
+- pause / reprise ;
+- reset ;
+- fermeture d’une position ;
+- lecture de l’état courant.
 
-Les routes sensibles sont protégées par une **clé API** transmise dans les headers.
+Les routes sensibles sont protégées par une **clé API**.
 
 ### Dashboard
-Le dashboard permet de :
-- suivre l’état du bot ;
+Permet de :
+- visualiser l’état du bot ;
 - consulter les derniers signaux ;
-- visualiser les positions ouvertes ;
-- piloter certaines actions sans modifier directement la logique Python ;
-- afficher des informations de risque et de statut.
+- suivre les positions ouvertes ;
+- déclencher certaines actions ;
+- afficher des informations de statut et de risque.
 
-## Robustesse
+## Robustesse & sécurité
 
-Le projet inclut plusieurs mécanismes destinés à améliorer la fiabilité :
-- gestion d’exceptions dans la boucle principale ;
-- redémarrage contrôlé du processus après une demande de reset ;
-- configuration séparée du code ;
-- API locale ;
-- authentification par clé API ;
-- mode paper trading pour tester sans exécution réelle.
+- séparation de la logique métier et de l’interface ;
+- gestion d’exceptions ;
+- redémarrage contrôlé ;
+- mode paper trading ;
+- secrets chargés depuis des fichiers d’environnement locaux ;
+- fichiers de configuration sensibles et logs exclus de Git.
 
-## Lancement
+## Installation
 
-### 1. Installer les dépendances Python
-Créer un environnement virtuel puis installer les dépendances nécessaires au projet.
-
-### 2. Créer la configuration locale
-
-Copier le fichier d’exemple :
+### 1. Créer la configuration locale
 
 ```bash
 cp config/config.example.json config/config.json
 ```
 
-Puis renseigner localement les paramètres MT5 / Telegram nécessaires.
+Renseigner ensuite localement les paramètres nécessaires.
 
-Le fichier `config/config.json` est ignoré par Git et ne doit jamais être commité.
-
-### 3. Configurer les variables d’environnement
-
-À la racine :
+### 2. Créer les fichiers d’environnement
 
 ```bash
 cp .env.example .env
-```
-
-Dans le dashboard :
-
-```bash
 cp webnode/.env.example webnode/.env
 ```
 
-Définir des valeurs fortes pour :
-- `API_SECRET_KEY` ;
-- `SESSION_SECRET` ;
-- `DASHBOARD_PASSWORD`.
+Définir notamment :
+- `API_SECRET_KEY`
+- `SESSION_SECRET`
+- `DASHBOARD_PASSWORD`
 
-Les fichiers `.env` sont ignorés par Git.
+### 3. Lancer le bot
 
-### 4. Lancer le bot
 ```bash
 python main.py
 ```
 
-### 5. Lancer l’API
+### 4. Lancer l’API
+
 ```bash
 python api_server.py
 ```
 
-Par défaut, l’API est utilisée localement sur le port `5005`.
+### 5. Lancer le dashboard
 
-### 6. Lancer le dashboard
 ```bash
 cd webnode
 npm install
 npm start
 ```
 
-Le dashboard est ensuite accessible sur `http://localhost:3000`.
+Dashboard : `http://localhost:3000`
 
-## Sécurité
+## Compétences démontrées
 
-- aucun identifiant réel ne doit être stocké dans le dépôt ;
-- les secrets sont chargés depuis des fichiers `.env` locaux ;
-- la configuration sensible `config/config.json` est exclue du versionnement ;
-- les logs d’exécution sont exclus du dépôt ;
-- si un secret est accidentellement commité, il doit être révoqué puis remplacé, même après suppression du fichier.
-
-## Ce que ce projet m’a permis de travailler
-
-- intégration de plusieurs services dans une même application ;
-- communication entre Python et Node.js via API REST ;
-- séparation entre logique métier et interface ;
-- gestion d’erreurs et redémarrage contrôlé ;
-- développement d’un dashboard de supervision ;
-- automatisation d’un workflow temps réel.
+**Python • API REST • Flask • Node.js • Express • Socket.IO • intégration de services • automatisation • gestion d’erreurs • architecture logicielle**
 
 ## Roadmap
 
-- tests automatisés plus complets ;
-- amélioration du calcul de risque ;
-- gestion avancée du trailing stop ;
-- meilleure observabilité ;
-- déploiement conteneurisé.
+- renforcer les tests automatisés ;
+- améliorer l’observabilité ;
+- approfondir le calcul de risque ;
+- conteneurisation ;
+- amélioration du trailing stop.
 
 ## Auteur
 
 **Davino Ildevert ANDRIANARIVONY**  
 Élève ingénieur — Développement logiciel  
-Python • API • Full Stack • Automatisation
+Python • Backend • API • Automatisation
