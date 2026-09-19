@@ -85,24 +85,52 @@ Le projet inclut plusieurs mécanismes destinés à améliorer la fiabilité :
 ### 1. Installer les dépendances Python
 Créer un environnement virtuel puis installer les dépendances nécessaires au projet.
 
-### 2. Configurer les variables d’environnement
-Créer un fichier `.env` contenant notamment la clé utilisée pour sécuriser l’API.
+### 2. Créer la configuration locale
 
-Configurer également les paramètres Telegram et MT5 dans le dossier `config/`.
+Copier le fichier d’exemple :
 
-### 3. Lancer le bot
+```bash
+cp config/config.example.json config/config.json
+```
+
+Puis renseigner localement les paramètres MT5 / Telegram nécessaires.
+
+Le fichier `config/config.json` est ignoré par Git et ne doit jamais être commité.
+
+### 3. Configurer les variables d’environnement
+
+À la racine :
+
+```bash
+cp .env.example .env
+```
+
+Dans le dashboard :
+
+```bash
+cp webnode/.env.example webnode/.env
+```
+
+Définir des valeurs fortes pour :
+- `API_SECRET_KEY` ;
+- `SESSION_SECRET` ;
+- `DASHBOARD_PASSWORD`.
+
+Les fichiers `.env` sont ignorés par Git.
+
+### 4. Lancer le bot
 ```bash
 python main.py
 ```
 
-### 4. Lancer l’API
+### 5. Lancer l’API
 ```bash
 python api_server.py
 ```
 
 Par défaut, l’API est utilisée localement sur le port `5005`.
 
-### 5. Lancer le dashboard
+### 6. Lancer le dashboard
 ```bash
 cd webnode
 npm install
@@ -110,6 +138,14 @@ npm start
 ```
 
 Le dashboard est ensuite accessible sur `http://localhost:3000`.
+
+## Sécurité
+
+- aucun identifiant réel ne doit être stocké dans le dépôt ;
+- les secrets sont chargés depuis des fichiers `.env` locaux ;
+- la configuration sensible `config/config.json` est exclue du versionnement ;
+- les logs d’exécution sont exclus du dépôt ;
+- si un secret est accidentellement commité, il doit être révoqué puis remplacé, même après suppression du fichier.
 
 ## Ce que ce projet m’a permis de travailler
 
